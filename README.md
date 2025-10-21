@@ -120,13 +120,13 @@ docker-compose exec app php artisan key:generate
 docker-compose exec app php artisan migrate:fresh --seed --force
 docker-compose exec app php artisan cache:clear
 
-# Done! Access: http://localhost:8080
+# Done! Access: http://localhost:8282
 ```
 
 ### Access Points
 
-- **Application:** http://localhost:8080
-- **PHPMyAdmin:** http://localhost:8081
+- **Application:** http://localhost:8282
+- **PHPMyAdmin:** http://localhost:8281
   - Server: `db`
   - Username: `jobmaker_user`
   - Password: `jobmaker_password`
@@ -141,7 +141,7 @@ After seeding, you can log in with these accounts:
 ```
 Email: admin@jobmaker.local
 Password: password
-Dashboard: http://localhost:8080/admin/dashboard
+Dashboard: http://localhost:8282/admin/dashboard
 ```
 
 **Capabilities:** Full system access, manage users, jobs, categories, settings
@@ -150,7 +150,7 @@ Dashboard: http://localhost:8080/admin/dashboard
 ```
 Email: employer1@jobmaker.local
 Password: password
-Dashboard: http://localhost:8080/employer/dashboard
+Dashboard: http://localhost:8282/employer/dashboard
 ```
 
 **Available Employers:**
@@ -164,7 +164,7 @@ Dashboard: http://localhost:8080/employer/dashboard
 ```
 Email: seeker1@jobmaker.local
 Password: password
-Dashboard: http://localhost:8080/seeker/dashboard
+Dashboard: http://localhost:8282/seeker/dashboard
 ```
 
 **Available Seekers:**
@@ -286,7 +286,7 @@ Key environment variables in `src/.env`:
 APP_NAME=JobMaker
 APP_ENV=local
 APP_DEBUG=true
-APP_URL=http://localhost:8080
+APP_URL=http://localhost:8282
 
 # Database (Docker)
 DB_CONNECTION=mysql

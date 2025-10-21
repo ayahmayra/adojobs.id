@@ -183,12 +183,12 @@ Buka browser Anda dan akses:
 
 ### 1. Aplikasi Utama
 ```
-http://localhost:8080
+http://localhost:8282
 ```
 
 ### 2. PHPMyAdmin (Database Admin)
 ```
-http://localhost:8081
+http://localhost:8281
 ```
 - **Server:** `db`
 - **Username:** `jobmaker_user`
@@ -202,7 +202,7 @@ http://localhost:8081
 ```
 📧 Email: admin@jobmaker.local
 🔑 Password: password
-🔗 Dashboard: http://localhost:8080/admin/dashboard
+🔗 Dashboard: http://localhost:8282/admin/dashboard
 ```
 
 **Capabilities:**
@@ -215,7 +215,7 @@ http://localhost:8081
 ```
 📧 Email: employer1@jobmaker.local
 🔑 Password: password
-🔗 Dashboard: http://localhost:8080/employer/dashboard
+🔗 Dashboard: http://localhost:8282/employer/dashboard
 ```
 
 **Capabilities:**
@@ -228,7 +228,7 @@ http://localhost:8081
 ```
 📧 Email: seeker1@jobmaker.local
 🔑 Password: password
-🔗 Dashboard: http://localhost:8080/seeker/dashboard
+🔗 Dashboard: http://localhost:8282/seeker/dashboard
 ```
 
 **Capabilities:**
@@ -490,14 +490,14 @@ Untuk dokumentasi lengkap, lihat:
 - [ ] Application key generated
 - [ ] Database migrated & seeded
 - [ ] Cache cleared
-- [ ] Application accessible at http://localhost:8080
+- [ ] Application accessible at http://localhost:8282
 - [ ] Login berhasil dengan demo account
 
 ---
 
 **🎉 Happy Coding!**
 
-**Application:** http://localhost:8080  
+**Application:** http://localhost:8282  
 **Admin Login:** admin@jobmaker.local / password
 
 ---

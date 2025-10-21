@@ -7,7 +7,7 @@ services:
       target: development
     container_name: jobmaker_app
     ports:
-      - "8080:8080"
+      - "8282:8080"
     volumes:
       - ./src:/app
       - frankenphp_cache:/data/caddy
@@ -70,7 +70,7 @@ services:
     image: phpmyadmin:latest
     container_name: jobmaker_phpmyadmin
     ports:
-      - "8081:80"
+      - "8281:80"
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306
