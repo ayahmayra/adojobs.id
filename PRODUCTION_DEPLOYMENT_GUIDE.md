@@ -409,12 +409,18 @@ docker-compose -f docker-compose.prod.yml exec app php artisan storage:link
 
 ### **5.4 Run Migrations**
 ```bash
-# Run migrations
+# Run all migrations (including user table updates)
 docker-compose -f docker-compose.prod.yml exec app php artisan migrate --force
+
+# Verify migrations
+docker-compose -f docker-compose.prod.yml exec app php artisan migrate:status
 
 # Run seeders (first time only)
 docker-compose -f docker-compose.prod.yml exec app php artisan db:seed --class=LocalDataSeeder --force
 ```
+
+**Important Note**: Migration `2025_10_21_060604_add_phone_address_to_users_table.php` 
+will add `phone` and `address` columns to users table if they don't exist yet.
 
 ### **5.5 Optimize Application**
 ```bash
