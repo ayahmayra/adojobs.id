@@ -38,7 +38,7 @@ services:
     image: mariadb:11.2
     container_name: jobmaker_db
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       - MYSQL_DATABASE=jobmaker
       - MYSQL_USER=jobmaker
