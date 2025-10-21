@@ -225,6 +225,26 @@ curl -I https://adojobs.id
 
 ## 🆘 Common Issues & Solutions
 
+### **Issue: 502 Bad Gateway + Worker Error**
+```
+Error: the number of threads must be superior to the number of workers
+```
+
+**Solution:**
+```bash
+# Pull latest fix (Caddyfile corrected)
+sudo git checkout -- docker/frankenphp/Caddyfile
+sudo git pull origin main
+
+# Rebuild
+docker-compose -f docker-compose.prod.yml down
+docker-compose -f docker-compose.prod.yml build --no-cache app
+docker-compose -f docker-compose.prod.yml up -d
+
+# Verify
+docker-compose -f docker-compose.prod.yml logs app | grep "FrankenPHP started"
+```
+
 ### **Issue: Column not found 'phone' or 'address'**
 ```bash
 # Solution: Run migrations first
