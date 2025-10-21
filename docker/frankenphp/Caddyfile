@@ -1,7 +1,10 @@
 {
     frankenphp {
-        num_threads 4
-        worker /app/public/index.php
+        num_threads 8
+        worker {
+            file /app/public/index.php
+            num 2
+        }
     }
     order php_server before file_server
 }
