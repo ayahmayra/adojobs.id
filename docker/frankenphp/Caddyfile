@@ -1,12 +1,40 @@
+{
+    frankenphp {
+        num_threads 8
+        worker {
+            file /app/public/index.php
+            num 2
+        }
+    }
+    order php_server before file_server
+}
+
 :8080 {
     root * /app/public
+    encode gzip zstd
     
-    # PHP FrankenPHP without worker mode for local development
+    # PHP FrankenPHP with worker mode
     php_server
     
-    # Basic logging for development
+    # Security headers
+    header {
+        -Server
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "no-referrer-when-downgrade"
+    }
+    
+    # Static file caching
+    @static {
+        file
+        path *.ico *.css *.js *.gif *.jpg *.jpeg *.png *.svg *.woff *.woff2 *.ttf *.eot
+    }
+    header @static Cache-Control "public, max-age=31536000, immutable"
+    
+    # Logging
     log {
-        output stdout
+        output file /var/log/caddy/access.log
         level INFO
     }
 }
