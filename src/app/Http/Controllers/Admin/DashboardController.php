@@ -53,7 +53,7 @@ class DashboardController extends Controller
             
             // Metrics
             'avg_applications_per_job' => $totalJobs > 0 ? round(Application::count() / $totalJobs, 1) : 0,
-            'application_rate' => $totalJobs > 0 ? round((Application::where('status', 'hired')->count() / Application::count()) * 100, 1) : 0,
+            'application_rate' => $totalJobs > 0 && Application::count() > 0 ? round((Application::where('status', 'hired')->count() / Application::count()) * 100, 1) : 0,
         ];
 
         // Calculate percentages
