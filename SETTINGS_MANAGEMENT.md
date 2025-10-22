@@ -147,7 +147,27 @@ Response:
 
 ## Penggunaan dalam Code
 
-### Mendapatkan Setting Value
+### Helper Functions
+Aplikasi menyediakan helper functions untuk akses mudah ke settings:
+
+```php
+// Get site name
+$name = site_name(); // Returns: "AdoJobs.id"
+
+// Get site description
+$desc = site_description(); // Returns: "Platform pencarian kerja..."
+
+// Get logo URL (returns null if not set)
+$logo = site_logo(); // Returns: "http://example.com/storage/settings/logo.png"
+
+// Get favicon URL (returns null if not set)
+$favicon = site_favicon(); // Returns: "http://example.com/storage/settings/favicon.ico"
+
+// Get any setting
+$value = setting('site_name', 'Default Value');
+```
+
+### Mendapatkan Setting Value (Direct Model)
 ```php
 use App\Models\Setting;
 
@@ -166,6 +186,29 @@ Setting::set('site_name', 'AdoJobs.id', 'string', 'general');
 ```
 
 ### Menggunakan di Blade Template
+
+#### Dengan Helper Functions (Recommended)
+```blade
+<!-- Display site name -->
+<h1>{{ site_name() }}</h1>
+
+<!-- Display logo with fallback -->
+@if(site_logo())
+    <img src="{{ site_logo() }}" alt="{{ site_name() }}">
+@else
+    <span>{{ site_name() }}</span>
+@endif
+
+<!-- Display favicon -->
+@if(site_favicon())
+    <link rel="icon" href="{{ site_favicon() }}" type="image/x-icon">
+@endif
+
+<!-- Display description -->
+<meta name="description" content="{{ site_description() }}">
+```
+
+#### Dengan Model (Alternative)
 ```blade
 <!-- Get site name -->
 {{ Setting::get('site_name', 'AdoJobs.id') }}
@@ -173,11 +216,6 @@ Setting::set('site_name', 'AdoJobs.id', 'string', 'general');
 <!-- Display logo -->
 @if($logo = Setting::get('site_logo'))
     <img src="{{ asset('storage/' . $logo) }}" alt="Logo">
-@endif
-
-<!-- Display favicon -->
-@if($favicon = Setting::get('site_favicon'))
-    <link rel="icon" href="{{ asset('storage/' . $favicon) }}" type="image/x-icon">
 @endif
 ```
 
@@ -239,9 +277,60 @@ docker-compose -f docker-compose.prod.yml exec app php artisan db:seed --class=G
 3. File disimpan dengan nama random untuk mencegah overwrite
 4. Admin-only access dengan middleware
 
+## Implementation Details
+
+### Helper Functions Location
+File: `app/helpers.php`
+
+Helper functions yang tersedia:
+- `setting($key, $default)` - Get any setting value
+- `site_name()` - Get site name
+- `site_description()` - Get site description  
+- `site_logo()` - Get logo URL
+- `site_favicon()` - Get favicon URL
+
+### Autoload Configuration
+Helper functions di-autoload melalui `composer.json`:
+```json
+"autoload": {
+    "files": [
+        "app/helpers.php"
+    ]
+}
+```
+
+### Layout Integration
+
+Logo dan favicon telah diintegrasikan ke semua layout:
+
+**1. Main Layout** (`components/layouts/main.blade.php`)
+- Favicon di `<head>`
+- Title menggunakan `site_name()`
+
+**2. Dashboard Layout** (`components/layouts/dashboard.blade.php`)
+- Favicon di `<head>`
+- Logo di top navigation
+- Title menggunakan `site_name()`
+
+**3. Guest Layout** (`components/layouts/guest.blade.php`)
+- Favicon di `<head>`
+- Logo di login/register page
+- Title menggunakan `site_name()`
+
+**4. Header Component** (`components/header.blade.php`)
+- Logo di main navigation
+- Fallback ke SVG + text jika logo tidak ada
+
+**5. Footer Component** (`components/footer.blade.php`)
+- Logo di footer dengan filter `brightness-0 invert` untuk dark background
+- Fallback ke SVG + text jika logo tidak ada
+
 ## Roadmap
 
 Fitur yang akan ditambahkan:
+- [x] General Settings (nama, deskripsi, logo, favicon)
+- [x] Helper functions untuk settings
+- [x] Integration ke semua layouts
 - [ ] Email Settings (SMTP configuration)
 - [ ] SEO Settings (meta tags, keywords)
 - [ ] Security Settings (password policy, 2FA)
