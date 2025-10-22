@@ -3,7 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdoJobs.id - Jalan Pintas Menuju Karier dan Talenta Terbaik!</title>
+    <title>{{ site_name() }} - Jalan Pintas Menuju Karier dan Talenta Terbaik!</title>
+    
+    <!-- Favicon -->
+    @if(site_favicon())
+        <link rel="icon" type="image/x-icon" href="{{ site_favicon() }}">
+        <link rel="shortcut icon" type="image/x-icon" href="{{ site_favicon() }}">
+    @endif
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
