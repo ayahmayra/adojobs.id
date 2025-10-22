@@ -133,8 +133,38 @@
                 @endauth
             </div>
 
-            {{-- Mobile Menu Button --}}
-            <div class="md:hidden">
+            {{-- Mobile Right Side --}}
+            <div class="flex items-center space-x-3 md:hidden">
+                {{-- Dashboard Button (Mobile) - Always Visible --}}
+                @auth
+                    @if(Auth::user()->isSeeker())
+                        <a href="{{ route('seeker.dashboard') }}" class="inline-flex items-center px-3 py-2 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-lg transition hover:bg-indigo-100">
+                            <svg class="mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"/>
+                            </svg>
+                            <span class="hidden sm:inline">Dashboard</span>
+                        </a>
+                    @elseif(Auth::user()->isEmployer())
+                        <a href="{{ route('employer.dashboard') }}" class="inline-flex items-center px-3 py-2 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-lg transition hover:bg-indigo-100">
+                            <svg class="mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"/>
+                            </svg>
+                            <span class="hidden sm:inline">Dashboard</span>
+                        </a>
+                    @else
+                        <a href="{{ route('dashboard') }}" class="inline-flex items-center px-3 py-2 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-lg transition hover:bg-indigo-100">
+                            <svg class="mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"/>
+                            </svg>
+                            <span class="hidden sm:inline">Dashboard</span>
+                        </a>
+                    @endif
+                @endauth
+                
+                {{-- Mobile Menu Button --}}
                 <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-700 hover:text-indigo-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -147,36 +177,6 @@
     {{-- Mobile Menu --}}
     <div x-show="mobileMenuOpen" class="border-t border-gray-200 md:hidden" style="display: none;">
         <div class="px-4 py-4 space-y-3">
-            {{-- Dashboard Button (Mobile) - Displayed First for Logged-in Users --}}
-            @auth
-                @if(Auth::user()->isSeeker())
-                    <a href="{{ route('seeker.dashboard') }}" class="flex items-center px-4 py-3 mb-3 text-sm font-medium text-white bg-indigo-600 rounded-lg transition hover:bg-indigo-700">
-                        <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"/>
-                        </svg>
-                        Dashboard
-                    </a>
-                @elseif(Auth::user()->isEmployer())
-                    <a href="{{ route('employer.dashboard') }}" class="flex items-center px-4 py-3 mb-3 text-sm font-medium text-white bg-indigo-600 rounded-lg transition hover:bg-indigo-700">
-                        <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"/>
-                        </svg>
-                        Dashboard
-                    </a>
-                @else
-                    <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 mb-3 text-sm font-medium text-white bg-indigo-600 rounded-lg transition hover:bg-indigo-700">
-                        <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"/>
-                        </svg>
-                        Dashboard
-                    </a>
-                @endif
-                <hr class="my-2">
-            @endauth
-            
             <a href="{{ route('home') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Beranda</a>
             <a href="{{ route('jobs.index') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Lowongan</a>
             <a href="{{ route('categories.index') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Kategori</a>
