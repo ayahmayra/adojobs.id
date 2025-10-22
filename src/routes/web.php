@@ -79,7 +79,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         Route::resource('categories', Admin\CategoryController::class);
         Route::resource('articles', Admin\ArticleController::class);
+        
+        // Settings Routes
         Route::get('/settings', [Admin\SettingsController::class, 'index'])->name('settings.index');
+        Route::post('/settings/general', [Admin\SettingsController::class, 'updateGeneral'])->name('settings.general.update');
+        Route::delete('/settings/file', [Admin\SettingsController::class, 'deleteFile'])->name('settings.file.delete');
     });
 
     // Employer Routes
