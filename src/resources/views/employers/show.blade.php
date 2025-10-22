@@ -104,7 +104,7 @@
                 <!-- Company Description -->
                 @if($employer->company_description)
                     <div class="overflow-hidden p-6 bg-white shadow-sm sm:rounded-lg">
-                        <h2 class="mb-4 text-xl font-bold text-gray-900">Tentang Perusahaan</h2>
+                        <h2 class="mb-4 text-xl font-bold text-gray-900">Tentang Rekruter</h2>
                         <p class="text-gray-700 whitespace-pre-line">{{ $employer->company_description }}</p>
                     </div>
                 @endif
@@ -215,8 +215,8 @@
                 @auth
                     @if(Auth::user()->isAdmin())
                         <div class="overflow-hidden p-6 text-white bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg shadow-sm">
-                            <h3 class="mb-2 font-bold">Hubungi Perusahaan</h3>
-                            <p class="mb-4 text-sm text-purple-100">Kirim pesan ke perusahaan ini sebagai admin</p>
+                            <h3 class="mb-2 font-bold">Hubungi Rekruter</h3>
+                            <p class="mb-4 text-sm text-purple-100">Kirim pesan ke rekruter ini sebagai admin</p>
                             <form action="{{ route('messages.start') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="user_id" value="{{ $employer->user_id }}">
@@ -232,7 +232,7 @@
                     @elseif(Auth::user()->isSeeker())
                         <div class="overflow-hidden p-6 text-white bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg shadow-sm">
                             <h3 class="mb-2 font-bold">Tertarik bekerja di sini?</h3>
-                            <p class="mb-4 text-sm text-indigo-100">Hubungi perusahaan untuk mendiskusikan peluang kerja</p>
+                            <p class="mb-4 text-sm text-indigo-100">Hubungi rekruter untuk mendiskusikan peluang kerja</p>
                             <form action="{{ route('messages.start') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="employer_id" value="{{ $employer->id }}">
@@ -241,7 +241,7 @@
                                     <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                                     </svg>
-                                    Kirim Pesan ke Perusahaan
+                                    Kirim Pesan ke Rekruter
                                 </button>
                             </form>
                         </div>
