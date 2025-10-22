@@ -79,6 +79,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
         Route::resource('categories', Admin\CategoryController::class);
         Route::resource('articles', Admin\ArticleController::class);
+        Route::get('/settings', [Admin\SettingsController::class, 'index'])->name('settings.index');
     });
 
     // Employer Routes
