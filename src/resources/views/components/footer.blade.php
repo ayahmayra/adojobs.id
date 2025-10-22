@@ -23,29 +23,26 @@
                 <h3 class="mb-4 font-semibold text-white">For Candidates</h3>
                 <ul class="space-y-2">
                     <li><a href="{{ route('jobs.index') }}" class="transition hover:text-white">Browse Jobs</a></li>
-                    <li><a href="#" class="transition hover:text-white">Browse Candidates</a></li>
-                    <li><a href="#" class="transition hover:text-white">Candidate Dashboard</a></li>
-                    <li><a href="#" class="transition hover:text-white">Job Alerts</a></li>
+                    <li><a href="{{ route('seekers.index') }}" class="transition hover:text-white">Browse Candidates</a></li>
+                  
                 </ul>
             </div>
 
             <div>
                 <h3 class="mb-4 font-semibold text-white">For Employers</h3>
                 <ul class="space-y-2">
-                    <li><a href="#" class="transition hover:text-white">All Employers</a></li>
-                    <li><a href="#" class="transition hover:text-white">Employer Dashboard</a></li>
-                    <li><a href="#" class="transition hover:text-white">Submit Job</a></li>
-                    <li><a href="#" class="transition hover:text-white">Job Packages</a></li>
+                    <li><a href="{{ route('employers.index') }}" class="transition hover:text-white">All Employers</a></li>
+                   
                 </ul>
             </div>
 
             <div>
                 <h3 class="mb-4 font-semibold text-white">About Us</h3>
                 <ul class="space-y-2">
-                    <li><a href="#" class="transition hover:text-white">Contact Us</a></li>
-                    <li><a href="#" class="transition hover:text-white">About Us</a></li>
-                    <li><a href="#" class="transition hover:text-white">Terms</a></li>
-                    <li><a href="#" class="transition hover:text-white">FAQ</a></li>
+                    <li><a href="{{ route('contact') }}" class="transition hover:text-white">Hubungi Kami</a></li>
+                    <li><a href="{{ route('about') }}" class="transition hover:text-white">Tentang Kami</a></li>
+                    <li><a href="{{ route('terms') }}" class="transition hover:text-white">Syarat & Ketentuan</a></li>
+                    <li><a href="{{ route('faq') }}" class="transition hover:text-white">FAQ</a></li>
                 </ul>
             </div>
         </div>
