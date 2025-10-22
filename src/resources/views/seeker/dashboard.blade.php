@@ -35,8 +35,56 @@
 
     {{-- Profile Summary Card --}}
     <div class="overflow-hidden mb-6 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg shadow-sm">
-        <div class="p-6 text-white">
-            <div class="flex justify-between items-center">
+        <div class="p-4 text-white sm:p-6">
+            {{-- Mobile Layout --}}
+            <div class="block sm:hidden">
+                <div class="flex items-center mb-4">
+                    @if($seeker->user->avatar)
+                        <img src="{{ $seeker->user->avatar_url }}" 
+                             alt="{{ $seeker->user->name }}"
+                             class="object-cover w-12 h-12 rounded-lg">
+                    @else
+                        <div class="flex justify-center items-center w-12 h-12 bg-white rounded-lg">
+                            <span class="text-lg font-bold text-blue-600">
+                                {{ substr($seeker->user->name, 0, 2) }}
+                            </span>
+                        </div>
+                    @endif
+                    <div class="flex-1 ml-3">
+                        <h2 class="text-lg font-bold">{{ $seeker->user->name }}</h2>
+                        <p class="text-sm text-blue-100">
+                            {{ $seeker->current_job_title ?? 'Pencari Kerja' }}
+                            @if($seeker->city)
+                                • {{ $seeker->city }}
+                            @endif
+                        </p>
+                    </div>
+                </div>
+                
+                @if($seeker->user->hasPublicResume())
+                    <div class="mb-4">
+                        <span class="inline-flex items-center px-3 py-1 text-xs font-medium bg-white bg-opacity-20 rounded-full">
+                            <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            Resume Publik Tersedia
+                        </span>
+                    </div>
+                @endif
+                
+                <div class="w-full">
+                    <a href="{{ route('jobs.index') }}" 
+                       class="flex justify-center items-center px-4 py-3 w-full font-medium text-blue-600 bg-white rounded-lg transition hover:bg-blue-50">
+                        <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        Cari Lowongan
+                    </a>
+                </div>
+            </div>
+
+            {{-- Desktop Layout --}}
+            <div class="hidden justify-between items-center sm:flex">
                 <div class="flex items-center">
                     @if($seeker->user->avatar)
                         <img src="{{ $seeker->user->avatar_url }}" 
