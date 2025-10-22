@@ -147,17 +147,8 @@
     {{-- Mobile Menu --}}
     <div x-show="mobileMenuOpen" class="border-t border-gray-200 md:hidden" style="display: none;">
         <div class="px-4 py-4 space-y-3">
-            <a href="{{ route('home') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Beranda</a>
-            <a href="{{ route('jobs.index') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Lowongan</a>
-            <a href="{{ route('categories.index') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Kategori</a>
-            <a href="{{ route('employers.index') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Rekruter</a>
-            <a href="{{ route('seekers.index') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Kandidat</a>
-            <a href="{{ route('articles.index') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Artikel</a>
-            
+            {{-- Dashboard Button (Mobile) - Displayed First for Logged-in Users --}}
             @auth
-                <hr class="my-2">
-                
-                {{-- Dashboard Button (Mobile) --}}
                 @if(Auth::user()->isSeeker())
                     <a href="{{ route('seeker.dashboard') }}" class="flex items-center px-4 py-3 mb-3 text-sm font-medium text-white bg-indigo-600 rounded-lg transition hover:bg-indigo-700">
                         <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -183,7 +174,19 @@
                         Dashboard
                     </a>
                 @endif
-
+                <hr class="my-2">
+            @endauth
+            
+            <a href="{{ route('home') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Beranda</a>
+            <a href="{{ route('jobs.index') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Lowongan</a>
+            <a href="{{ route('categories.index') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Kategori</a>
+            <a href="{{ route('employers.index') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Rekruter</a>
+            <a href="{{ route('seekers.index') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Kandidat</a>
+            <a href="{{ route('articles.index') }}" class="block font-medium text-gray-700 hover:text-indigo-600">Artikel</a>
+            
+            @auth
+                <hr class="my-2">
+                
                 {{-- Messages Link (Mobile) --}}
                 @if(Auth::user()->isSeeker() || Auth::user()->isEmployer())
                     @php
