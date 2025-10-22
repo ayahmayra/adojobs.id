@@ -1,12 +1,12 @@
 <x-layouts.dashboard>
-    <x-slot name="title">My Applications</x-slot>
+    <x-slot name="title">Lamaran Saya</x-slot>
     
     <x-slot name="sidebar">
         <x-sidebar.seeker />
     </x-slot>
 
     <x-slot name="header">
-        My Applications
+        Lamaran Saya
     </x-slot>
 
     {{-- Filter Form --}}
@@ -16,14 +16,14 @@
             <div class="flex-1 min-w-[200px]">
                 <label for="status" class="block mb-1 text-sm font-medium text-gray-700">Status</label>
                 <select name="status" id="status" class="w-full rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
-                    <option value="">All Status</option>
-                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="reviewed" {{ request('status') == 'reviewed' ? 'selected' : '' }}>Reviewed</option>
-                    <option value="shortlisted" {{ request('status') == 'shortlisted' ? 'selected' : '' }}>Shortlisted</option>
-                    <option value="interview" {{ request('status') == 'interview' ? 'selected' : '' }}>Interview</option>
-                    <option value="accepted" {{ request('status') == 'accepted' ? 'selected' : '' }}>Accepted</option>
-                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                    <option value="withdrawn" {{ request('status') == 'withdrawn' ? 'selected' : '' }}>Withdrawn</option>
+                    <option value="">Semua Status</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu</option>
+                    <option value="reviewed" {{ request('status') == 'reviewed' ? 'selected' : '' }}>Ditinjau</option>
+                    <option value="shortlisted" {{ request('status') == 'shortlisted' ? 'selected' : '' }}>Masuk Daftar Pendek</option>
+                    <option value="interview" {{ request('status') == 'interview' ? 'selected' : '' }}>Wawancara</option>
+                    <option value="accepted" {{ request('status') == 'accepted' ? 'selected' : '' }}>Diterima</option>
+                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                    <option value="withdrawn" {{ request('status') == 'withdrawn' ? 'selected' : '' }}>Dibatalkan</option>
                 </select>
             </div>
 
@@ -34,7 +34,7 @@
                 </button>
                 @if(request()->hasAny(['status']))
                 <a href="{{ route('seeker.applications.index') }}" class="px-6 py-2 text-gray-700 bg-gray-200 rounded-lg transition hover:bg-gray-300">
-                    Clear
+                    Hapus Filter
                 </a>
                 @endif
             </div>
@@ -77,7 +77,7 @@
                                 <svg class="mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                                Applied {{ $application->created_at->diffForHumans() }}
+                                Dilamar {{ $application->created_at->diffForHumans() }}
                             </span>
                         </div>
                     </div>
@@ -94,17 +94,27 @@
                                 'rejected' => 'bg-red-100 text-red-800',
                                 'withdrawn' => 'bg-gray-100 text-gray-800',
                             ];
+                            $statusLabels = [
+                                'pending' => 'Menunggu',
+                                'reviewed' => 'Ditinjau',
+                                'shortlisted' => 'Daftar Pendek',
+                                'interview' => 'Wawancara',
+                                'accepted' => 'Diterima',
+                                'rejected' => 'Ditolak',
+                                'withdrawn' => 'Dibatalkan',
+                            ];
                             $statusColor = $statusColors[$application->status] ?? 'bg-gray-100 text-gray-800';
+                            $statusLabel = $statusLabels[$application->status] ?? ucfirst($application->status);
                         @endphp
-                        <span class="{{ $statusColor }} px-3 py-1 rounded-full text-xs font-medium uppercase">
-                            {{ $application->status }}
+                        <span class="{{ $statusColor }} px-3 py-1 rounded-full text-xs font-medium">
+                            {{ $statusLabel }}
                         </span>
                     </div>
                 </div>
 
                 {{-- Cover Letter Preview --}}
                 <div class="p-4 mb-4 bg-gray-50 rounded-lg">
-                    <h4 class="mb-2 text-sm font-semibold text-gray-700">Cover Letter</h4>
+                    <h4 class="mb-2 text-sm font-semibold text-gray-700">Surat Lamaran</h4>
                     <p class="text-sm text-gray-600 line-clamp-2">{{ $application->cover_letter }}</p>
                 </div>
 
@@ -113,13 +123,13 @@
                     <div class="flex gap-3">
                         <a href="{{ route('jobs.show', $application->job->slug) }}" 
                            class="text-sm font-medium text-indigo-600 hover:text-indigo-800">
-                            View Job Details
+                            Lihat Detail Lowongan
                         </a>
                         @if($application->status === 'pending')
                         <button 
-                            onclick="if(confirm('Are you sure you want to withdraw this application?')) { document.getElementById('withdraw-{{ $application->id }}').submit(); }"
+                            onclick="if(confirm('Apakah Anda yakin ingin membatalkan lamaran ini?')) { document.getElementById('withdraw-{{ $application->id }}').submit(); }"
                             class="text-sm font-medium text-red-600 hover:text-red-800">
-                            Withdraw Application
+                            Batalkan Lamaran
                         </button>
                         <form id="withdraw-{{ $application->id }}" 
                               action="{{ route('seeker.applications.withdraw', $application) }}" 
@@ -134,7 +144,7 @@
                     {{-- Job Status --}}
                     @if($application->job->status !== 'published')
                     <span class="text-xs text-gray-500">
-                        Job Status: {{ ucfirst($application->job->status) }}
+                        Status Lowongan: {{ ucfirst($application->job->status) }}
                     </span>
                     @endif
                 </div>
@@ -152,21 +162,21 @@
             <svg class="mx-auto mb-4 w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
-            <h3 class="mb-2 text-lg font-semibold text-gray-900">No Applications Yet</h3>
+            <h3 class="mb-2 text-lg font-semibold text-gray-900">Belum Ada Lamaran</h3>
             <p class="mb-6 text-gray-600">
                 @if(request('status'))
-                    No applications found with the selected status.
+                    Tidak ada lamaran dengan status yang dipilih.
                 @else
-                    You haven't applied to any jobs yet. Start browsing jobs and apply!
+                    Anda belum melamar pekerjaan apapun. Mulai jelajahi lowongan dan lamar sekarang!
                 @endif
             </p>
             <div class="space-x-3">
                 <a href="{{ route('seeker.jobs.index') }}" class="inline-block px-6 py-3 text-white bg-indigo-600 rounded-lg transition hover:bg-indigo-700">
-                    Browse Jobs
+                    Jelajahi Lowongan
                 </a>
                 @if(request('status'))
                 <a href="{{ route('seeker.applications.index') }}" class="inline-block px-6 py-3 text-gray-700 bg-gray-200 rounded-lg transition hover:bg-gray-300">
-                    Clear Filter
+                    Hapus Filter
                 </a>
                 @endif
             </div>

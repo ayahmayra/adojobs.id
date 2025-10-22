@@ -74,8 +74,8 @@
                         <label class="flex items-start">
                             <input type="checkbox" required class="mt-1 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
                             <span class="ml-2 text-sm text-gray-600">
-                                I confirm that the information provided is accurate and I agree to the 
-                                <a href="#" class="text-indigo-600 hover:text-indigo-800">terms and conditions</a>.
+                                Saya menyatakan bahwa informasi yang saya berikan adalah benar dan saya setuju dengan 
+                                <a href="{{ route('terms') }}" class="text-indigo-600 hover:text-indigo-800">syarat dan ketentuan</a>.
                             </span>
                         </label>
                     </div>
