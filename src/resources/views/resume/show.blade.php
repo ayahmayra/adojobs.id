@@ -131,17 +131,24 @@
                 @endif
 
                 {{-- Skills --}}
-                @if($user->seeker->skills && count($user->seeker->skills) > 0)
-                    <section class="mb-8">
-                        <h2 class="pb-2 mb-4 text-2xl font-bold text-gray-900 border-b-2 border-indigo-600">Skills</h2>
-                        <div class="flex flex-wrap gap-2">
-                            @foreach($user->seeker->skills as $skill)
-                                <span class="px-4 py-2 text-sm font-medium text-indigo-800 bg-indigo-100 rounded-lg">
-                                    {{ $skill }}
-                                </span>
-                            @endforeach
-                        </div>
-                    </section>
+                @if($user->seeker->skills)
+                    @php
+                        // Handle both array and string formats
+                        $skills = is_array($user->seeker->skills) ? $user->seeker->skills : json_decode($user->seeker->skills, true);
+                        $skills = $skills ?: [];
+                    @endphp
+                    @if(count($skills) > 0)
+                        <section class="mb-8">
+                            <h2 class="pb-2 mb-4 text-2xl font-bold text-gray-900 border-b-2 border-indigo-600">Skills</h2>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($skills as $skill)
+                                    <span class="px-4 py-2 text-sm font-medium text-indigo-800 bg-indigo-100 rounded-lg">
+                                        {{ $skill }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </section>
+                    @endif
                 @endif
 
                 {{-- Work Experience --}}
