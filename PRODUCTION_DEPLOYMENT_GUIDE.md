@@ -235,8 +235,8 @@ services:
     image: mariadb:11.2
     container_name: adojobs_db
     environment:
-      - MYSQL_DATABASE=adojobs_production
-      - MYSQL_USER=adojobs_user
+      - MYSQL_DATABASE=adojobsdb2025
+      - MYSQL_USER=adojobsdbuser2025
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
     volumes:
