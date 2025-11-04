@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('featured_image')->nullable();
             $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
             $table->timestamp('published_at')->nullable();
-            $table->foreignId('author_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('author_id')->nullable()->constrained('users')->onDelete('set null');
             $table->integer('views_count')->default(0);
             $table->json('meta_data')->nullable(); // For SEO meta tags
             $table->timestamps();

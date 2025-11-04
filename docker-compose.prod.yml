@@ -1,32 +1,50 @@
 services:
-  # Laravel Application with FrankenPHP
+  # Laravel Application with FrankenPHP (Production)
   app:
+    env_file:
+      - .env.production
     build:
       context: .
       dockerfile: Dockerfile
-      target: development
+      target: production
     container_name: adojobs_app
     ports:
       - "8282:8080"
     volumes:
-      - ./src:/app
+      # Only mount storage directories for uploads/cache
+      - ./src/storage/app:/app/storage/app
+      - ./src/storage/logs:/app/storage/logs
       - frankenphp_cache:/data/caddy
     environment:
-      - APP_NAME=AdoJobs.id
-      - APP_ENV=local
-      - APP_DEBUG=true
+      # These should be overridden by .env file or set explicitly
+      - APP_NAME=AdoJobs
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=${APP_URL:-http://localhost:8282}
+      - APP_KEY=${APP_KEY}
+      
+      # Database
       - DB_CONNECTION=mysql
       - DB_HOST=db
       - DB_PORT=3306
-      - DB_DATABASE=adojobs
-      - DB_USERNAME=adojobs
-      - DB_PASSWORD=secret
+      - DB_DATABASE=${DB_DATABASE:-adojobs}
+      - DB_USERNAME=${DB_USERNAME:-adojobs}
+      - DB_PASSWORD=${DB_PASSWORD}
+      
+      # Redis
       - REDIS_HOST=redis
       - REDIS_PASSWORD=null
       - REDIS_PORT=6379
-      - CACHE_DRIVER=file
-      - SESSION_DRIVER=file
-      - QUEUE_CONNECTION=sync
+      
+      # Cache & Session
+      - CACHE_DRIVER=redis
+      - SESSION_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      
+      # Logging
+      - LOG_CHANNEL=stack
+      - LOG_LEVEL=error
+      
     depends_on:
       db:
         condition: service_healthy
@@ -46,13 +64,13 @@ services:
   db:
     image: mariadb:11.2
     container_name: adojobs_db
-    ports:
-      - "3307:3306"
+    env_file:
+      - .env.production
     environment:
-      - MYSQL_DATABASE=adojobs
-      - MYSQL_USER=adojobs
-      - MYSQL_PASSWORD=secret
-      - MYSQL_ROOT_PASSWORD=root_secret
+      - MYSQL_DATABASE=${DB_DATABASE:-adojobs}
+      - MYSQL_USER=${DB_USERNAME:-adojobs}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/conf.d/custom.cnf
@@ -71,8 +89,6 @@ services:
   redis:
     image: redis:7-alpine
     container_name: adojobs_redis
-    ports:
-      - "6380:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -85,23 +101,6 @@ services:
       timeout: 3s
       retries: 5
 
-  # PHPMyAdmin for Database Management (Optional)
-  phpmyadmin:
-    image: phpmyadmin:latest
-    container_name: adojobs_phpmyadmin
-    ports:
-      - "8281:80"
-    environment:
-      - PMA_HOST=db
-      - PMA_PORT=3306
-      - PMA_USER=root
-      - PMA_PASSWORD=root_secret
-    depends_on:
-      - db
-    networks:
-      - adojobs_network
-    restart: unless-stopped
-
 volumes:
   mariadb_data:
     driver: local
@@ -113,4 +112,5 @@ volumes:
 networks:
   adojobs_network:
     driver: bridge
+
 

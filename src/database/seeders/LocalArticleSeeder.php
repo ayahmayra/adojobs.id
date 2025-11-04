@@ -14,12 +14,11 @@ class LocalArticleSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get admin user as author
+        // Get admin user as author (if available)
         $admin = User::where('role', 'admin')->first();
         
         if (!$admin) {
-            $this->command->warn('No admin user found. Please create an admin user first.');
-            return;
+            $this->command->warn('No admin user found. Articles will be created without author.');
         }
 
         $articles = [
@@ -330,7 +329,7 @@ class LocalArticleSeeder extends Seeder
                 'content' => $articleData['content'],
                 'status' => $articleData['status'],
                 'published_at' => $articleData['published_at'],
-                'author_id' => $admin->id,
+                'author_id' => $admin ? $admin->id : null,  // Nullable if no admin
                 'meta_data' => [
                     'title' => $articleData['title'],
                     'description' => $articleData['excerpt'],

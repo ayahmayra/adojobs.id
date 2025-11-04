@@ -21,6 +21,12 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Node.js and npm (for asset building in production)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -48,8 +54,8 @@ FROM base AS development
 ENV APP_ENV=local \
     APP_DEBUG=true
 
-# Copy FrankenPHP Caddyfile for development
-COPY docker/frankenphp/Caddyfile /etc/caddy/Caddyfile
+# Copy FrankenPHP Caddyfile for development (without worker mode)
+COPY docker/frankenphp/Caddyfile.dev /etc/caddy/Caddyfile
 
 # Expose port
 EXPOSE 8080
@@ -66,24 +72,31 @@ COPY src /app
 # Install production dependencies only
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Optimize Laravel for production
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache \
-    && php artisan optimize
+# Build frontend assets if needed
+RUN if [ -f "package.json" ]; then \
+        npm install && npm run build; \
+    fi
 
-# Set permissions
-RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
+# Set permissions before optimization
+RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache \
+    && chmod -R 775 /app/storage /app/bootstrap/cache
+
+# Note: Laravel optimization commands will run via deploy script
+# to ensure they use the correct environment variables
 
 # Set environment
 ENV APP_ENV=production \
     APP_DEBUG=false
 
-# Copy FrankenPHP Caddyfile for production
+# Copy FrankenPHP Caddyfile (same as development for consistency)
 COPY docker/frankenphp/Caddyfile /etc/caddy/Caddyfile
 
 # Expose port
 EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s \
+    CMD curl -f http://localhost:8080/ || exit 1
 
 # Start FrankenPHP
 CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]

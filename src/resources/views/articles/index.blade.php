@@ -48,7 +48,7 @@
                             <div class="p-6">
                                 <!-- Meta Info -->
                                 <div class="flex items-center mb-3 text-sm text-gray-500">
-                                    <span>{{ $article->author->name }}</span>
+                                    <span>{{ $article->author ? $article->author->name : 'AdoJobs.id' }}</span>
                                     <span class="mx-2">•</span>
                                     <span>{{ $article->formatted_published_date }}</span>
                                     <span class="mx-2">•</span>

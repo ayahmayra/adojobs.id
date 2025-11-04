@@ -1,0 +1,48 @@
+{
+    frankenphp
+    order php_server before file_server
+}
+
+:8080 {
+    root * /app/public
+    
+    # Enable compression
+    encode gzip zstd
+    
+    # PHP FrankenPHP WITHOUT worker mode (for development with volume mounts)
+    php_server
+    
+    # Basic security headers
+    header {
+        -Server
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+    }
+    
+    # Static file caching
+    @static {
+        path *.css *.js *.ico *.gif *.jpg *.jpeg *.png *.svg *.woff *.woff2
+    }
+    header @static Cache-Control "public, max-age=3600"
+    
+    # Pretty URLs
+    try_files {path} {path}/ /index.php?{query}
+    
+    # File server for static assets
+    file_server
+    
+    # Block sensitive files
+    @sensitive {
+        path *.env* *.git* *.md composer.json composer.lock package*.json
+    }
+    respond @sensitive 404
+    
+    # Structured logging
+    log {
+        output stdout
+        format json
+        level INFO
+    }
+}
+

@@ -20,12 +20,16 @@
                 <!-- Meta Info -->
                 <div class="flex flex-wrap gap-4 items-center mb-6 text-sm text-gray-600">
                     <div class="flex items-center">
-                        <img 
-                            src="{{ $article->author->avatar_url }}" 
-                            alt="{{ $article->author->name }}"
-                            class="mr-2 w-8 h-8 rounded-full"
-                        >
-                        <span>Oleh {{ $article->author->name }}</span>
+                        @if($article->author)
+                            <img 
+                                src="{{ $article->author->avatar_url }}" 
+                                alt="{{ $article->author->name }}"
+                                class="mr-2 w-8 h-8 rounded-full"
+                            >
+                            <span>Oleh {{ $article->author->name }}</span>
+                        @else
+                            <span>Oleh AdoJobs.id</span>
+                        @endif
                     </div>
                     <span>•</span>
                     <span>{{ $article->formatted_published_date }}</span>

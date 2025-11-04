@@ -14,9 +14,9 @@ class SettingSeeder extends Seeder
     {
         $settings = [
             // General Settings
-            ['key' => 'site_name', 'value' => 'JobMaker', 'type' => 'string', 'group' => 'general', 'description' => 'Website name'],
-            ['key' => 'site_description', 'value' => 'Your Gateway to Career Success', 'type' => 'string', 'group' => 'general', 'description' => 'Site tagline'],
-            ['key' => 'site_email', 'value' => 'info@jobmaker.local', 'type' => 'string', 'group' => 'general', 'description' => 'Contact email'],
+            ['key' => 'site_name', 'value' => 'AdoJobs.id', 'type' => 'string', 'group' => 'general', 'description' => 'Website name'],
+            ['key' => 'site_description', 'value' => 'Platform Lowongan Kerja Lokal Indonesia', 'type' => 'string', 'group' => 'general', 'description' => 'Site tagline'],
+            ['key' => 'site_email', 'value' => 'info@adojobs.id', 'type' => 'string', 'group' => 'general', 'description' => 'Contact email'],
             ['key' => 'site_phone', 'value' => '+62 812-3456-7890', 'type' => 'string', 'group' => 'general', 'description' => 'Contact phone'],
             ['key' => 'maintenance_mode', 'value' => '0', 'type' => 'boolean', 'group' => 'general', 'description' => 'Enable maintenance mode'],
             
@@ -32,8 +32,8 @@ class SettingSeeder extends Seeder
             ['key' => 'notify_employer_new_application', 'value' => '1', 'type' => 'boolean', 'group' => 'applications', 'description' => 'Notify employer of new applications'],
             
             // Email Settings
-            ['key' => 'email_from_name', 'value' => 'JobMaker', 'type' => 'string', 'group' => 'email', 'description' => 'Email sender name'],
-            ['key' => 'email_from_address', 'value' => 'noreply@jobmaker.local', 'type' => 'string', 'group' => 'email', 'description' => 'Email sender address'],
+            ['key' => 'email_from_name', 'value' => 'AdoJobs.id', 'type' => 'string', 'group' => 'email', 'description' => 'Email sender name'],
+            ['key' => 'email_from_address', 'value' => 'noreply@adojobs.id', 'type' => 'string', 'group' => 'email', 'description' => 'Email sender address'],
         ];
 
         foreach ($settings as $setting) {

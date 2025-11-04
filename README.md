@@ -1,4 +1,4 @@
-# JobMaker - Laravel Job Portal System
+# AdoJobs.id - Platform Lowongan Kerja Lokal
 
 A modern job portal system built with **Laravel 12**, **Docker**, **FrankenPHP**, **MariaDB**, and **Redis**. This system connects Job Seekers, Employers, and Administrators in a comprehensive platform for job posting and application management.
 
@@ -11,16 +11,28 @@ A modern job portal system built with **Laravel 12**, **Docker**, **FrankenPHP**
 
 ## 📖 Documentation
 
+**All documentation is now organized in the [`docs/`](docs/) folder.**
+
+### Quick Links
+
 | Document | Description |
 |----------|-------------|
-| **[📖 Documentation Index](DOCUMENTATION_INDEX.md)** | Complete documentation guide |
-| **[⚡ Quick Start](QUICK_START.md)** | Get running in 10 minutes |
-| **[📦 Installation Guide](INSTALLATION.md)** | Detailed setup with troubleshooting |
-| **[👨‍💻 Development Guide](DEVELOPMENT_GUIDE.md)** | Hot reload, workflow & debugging |
-| **[🚀 Deployment Guide](DEPLOYMENT.md)** | Production deployment |
-| **[🎨 Welcome Page](WELCOME_PAGE.md)** | Landing page documentation |
-| **[🎨 Layout Structure](LAYOUT_STRUCTURE.md)** | Layout system & components guide |
-| **[🤝 Contributing](CONTRIBUTING.md)** | How to contribute |
+| **[📖 Documentation Index](docs/DOCS_INDEX.md)** | Complete documentation guide |
+| **[⚡ Quick Start](docs/QUICK_START.md)** | Get running in 10 minutes |
+| **[📦 Installation Guide](docs/INSTALLATION.md)** | Detailed setup with troubleshooting |
+| **[👨‍💻 Development Guide](docs/DEVELOPMENT_GUIDE.md)** | Hot reload, workflow & debugging |
+| **[🚀 Deployment Guide](docs/DEPLOYMENT.md)** | Production deployment |
+| **[🤝 Contributing](docs/CONTRIBUTING.md)** | How to contribute |
+
+### Recent Updates ⭐
+
+| Document | Description |
+|----------|-------------|
+| **[✅ Final Status Complete](docs/FINAL_STATUS_COMPLETE.md)** | Complete system status |
+| **[👤 Admin Seeder](docs/ADMIN_SEEDER_IMPLEMENTATION.md)** | Admin user seeder (runs first) |
+| **[⭐ Featured Jobs](docs/FEATURED_JOBS_SEEDER.md)** | Featured jobs implementation |
+| **[📝 Article Fix](docs/ARTICLE_VIEW_FIX.md)** | Nullable author handling |
+| **[🎨 Rebranding](docs/REBRAND_AND_FIX_SUMMARY.md)** | Complete rebranding summary |
 
 ---
 
