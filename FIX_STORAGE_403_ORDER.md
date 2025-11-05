@@ -34,12 +34,14 @@ respond @disallowed 403  # ← Hanya untuk file yang tidak ada
 
 ## Solusi
 
-### Langkah 1: Gunakan Script Fix
+### Langkah 1: Gunakan Script Fix (Recommended)
 
 ```bash
 cd /var/www/adojobs.id
-./fix-storage-403-final.sh
+./fix-storage-403-rebuild.sh
 ```
+
+**PENTING:** Script ini akan rebuild container dengan `--no-cache` untuk memastikan Caddyfile.prod digunakan, bukan Caddyfile.dev.
 
 Script ini akan:
 1. ✅ Pull perubahan terbaru (Caddyfile dengan urutan yang benar)
