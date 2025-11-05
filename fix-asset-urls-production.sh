@@ -46,11 +46,22 @@ docker exec adojobs_app php artisan view:clear
 echo "✅ Caches cleared"
 echo ""
 
-echo "[4/4] Rebuilding caches with correct APP_URL..."
+echo "[4/5] Rebuilding caches with correct APP_URL..."
 docker exec adojobs_app php artisan config:cache
 docker exec adojobs_app php artisan route:cache
 docker exec adojobs_app php artisan view:cache
 echo "✅ Caches rebuilt"
+echo ""
+
+echo "[5/5] Testing route URL generation..."
+TEST_ROUTE=$(docker exec adojobs_app php artisan tinker --execute="echo route('home');" 2>&1 | tail -1)
+echo "   Home route URL: $TEST_ROUTE"
+if [[ "$TEST_ROUTE" == *"https://adojobs.id"* ]]; then
+    echo "✅ Route URLs are correct!"
+else
+    echo "⚠️  Route URLs still incorrect"
+    echo "   This might require container restart"
+fi
 echo ""
 
 echo "[5/5] Verifying APP_URL after cache rebuild..."
