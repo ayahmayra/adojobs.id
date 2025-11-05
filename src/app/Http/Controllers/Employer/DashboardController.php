@@ -45,6 +45,9 @@ class DashboardController extends Controller
             ->get();
             
         $recentApplications = Application::whereIn('job_id', $jobIds)
+            ->whereHas('seeker.user', function($q) {
+                $q->where('is_active', true);
+            })
             ->with(['job', 'seeker.user'])
             ->latest()
             ->take(5)
@@ -56,16 +59,22 @@ class DashboardController extends Controller
             ->unread()
             ->count();
 
-        // Recent messages
+        // Recent messages - only with active seekers
         $recentConversations = \App\Models\Conversation::active()
             ->forEmployer($employer->id)
+            ->whereHas('seeker.user', function($q) {
+                $q->where('is_active', true);
+            })
             ->with(['seeker.user', 'lastMessage'])
             ->latest('updated_at')
             ->take(3)
             ->get();
 
-        // Favorite candidates (seekers)
+        // Favorite candidates (seekers) - only active ones
         $favoriteCandidates = $employer->savedCandidates()
+            ->whereHas('seeker.user', function($q) {
+                $q->where('is_active', true);
+            })
             ->with(['seeker.user'])
             ->latest()
             ->take(5)

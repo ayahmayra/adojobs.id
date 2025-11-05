@@ -12,21 +12,25 @@ class SeekerController extends Controller
      */
     public function index(Request $request)
     {
+        // Base query: always filter active users
         $query = Seeker::with('user')
             ->whereHas('user', function($q) {
                 $q->where('is_active', true);
             });
 
-        // Search functionality
+        // Search functionality (only search within active users)
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('current_job_title', 'like', "%{$search}%")
                   ->orWhere('bio', 'like', "%{$search}%")
                   ->orWhere('city', 'like', "%{$search}%")
-                  ->orWhere('skills', 'like', "%{$search}%");
-            })->orWhereHas('user', function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+                  ->orWhere('skills', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($q) use ($search) {
+                      // is_active already filtered in base query, but add it here for safety
+                      $q->where('is_active', true)
+                        ->where('name', 'like', "%{$search}%");
+                  });
             });
         }
 
@@ -61,6 +65,11 @@ class SeekerController extends Controller
      */
     public function show(Seeker $seeker)
     {
+        // Check if seeker's user is active
+        if (!$seeker->user || !$seeker->user->is_active) {
+            abort(404, 'Profil kandidat tidak ditemukan atau tidak aktif.');
+        }
+
         $seeker->load(['user', 'applications' => function($query) {
             $query->with('job')
                   ->latest()

@@ -18,6 +18,10 @@ use App\Http\Controllers\Seeker;
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+// Account Pending Activation Route (accessible without auth)
+Route::get('/account/pending', [App\Http\Controllers\AccountPendingController::class, 'index'])
+    ->name('account.pending');
 Route::get('/lowongan', [JobController::class, 'index'])->name('jobs.index');
 Route::get('/lowongan/{job}', [JobController::class, 'show'])->name('jobs.show');
 Route::get('/kategori', [CategoryController::class, 'index'])->name('categories.index');
@@ -111,7 +115,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Seeker Routes
     Route::middleware(['seeker'])->prefix('seeker')->name('seeker.')->group(function () {
         Route::get('/dashboard', [Seeker\DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/jobs', [Seeker\DashboardController::class, 'browseJobs'])->name('jobs.index');
         Route::get('/jobs/{job}/apply', [Seeker\ApplicationController::class, 'create'])
             ->name('applications.create');
         Route::post('/jobs/{job}/apply', [Seeker\ApplicationController::class, 'store'])

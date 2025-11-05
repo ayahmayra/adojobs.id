@@ -171,7 +171,7 @@
                 @endif
             </p>
             <div class="space-x-3">
-                <a href="{{ route('seeker.jobs.index') }}" class="inline-block px-6 py-3 text-white bg-indigo-600 rounded-lg transition hover:bg-indigo-700">
+                <a href="{{ route('jobs.index') }}" class="inline-block px-6 py-3 text-white bg-indigo-600 rounded-lg transition hover:bg-indigo-700">
                     Jelajahi Lowongan
                 </a>
                 @if(request('status'))

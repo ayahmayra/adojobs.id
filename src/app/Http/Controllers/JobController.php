@@ -13,7 +13,12 @@ class JobController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Job::query()->active()->with(['employer', 'category']);
+        $query = Job::query()
+            ->active()
+            ->with(['employer.user', 'category'])
+            ->whereHas('employer.user', function($q) {
+                $q->where('is_active', true);
+            });
 
         // Filter by category
         if ($request->filled('category')) {
@@ -56,16 +61,22 @@ class JobController extends Controller
     public function show($slug)
     {
         $job = Job::where('slug', $slug)
+            ->whereHas('employer.user', function($q) {
+                $q->where('is_active', true);
+            })
             ->with(['employer.user', 'category', 'applications'])
             ->firstOrFail();
 
         // Increment view count
         $job->incrementViews();
 
-        // Get similar jobs
+        // Get similar jobs (only from active employers)
         $similarJobs = Job::active()
             ->where('id', '!=', $job->id)
             ->where('category_id', $job->category_id)
+            ->whereHas('employer.user', function($q) {
+                $q->where('is_active', true);
+            })
             ->with(['employer', 'category'])
             ->take(4)
             ->get();

@@ -304,7 +304,31 @@ class MessageController extends Controller
             $user->load('seeker');
         }
         
-        if ($user->isEmployer() && $targetUser->isSeeker()) {
+        // Check based on both role and actual relationship existence
+        // This handles cases where role might not match the relationship
+        $userIsEmployer = $user->isEmployer() || ($user->employer !== null);
+        $userIsSeeker = $user->isSeeker() || ($user->seeker !== null);
+        $targetIsSeeker = $targetUser->isSeeker() || ($targetUser->seeker !== null);
+        $targetIsEmployer = $targetUser->isEmployer() || ($targetUser->employer !== null);
+        
+        // Debug: Log the roles and relationships for troubleshooting
+        \Log::debug('Direct contact attempt', [
+            'user_id' => $user->id,
+            'user_role' => $user->role,
+            'user_is_employer' => $userIsEmployer,
+            'user_is_seeker' => $userIsSeeker,
+            'user_has_employer' => $user->employer ? 'yes' : 'no',
+            'user_has_seeker' => $user->seeker ? 'yes' : 'no',
+            'target_user_id' => $targetUser->id,
+            'target_user_role' => $targetUser->role,
+            'target_is_seeker' => $targetIsSeeker,
+            'target_is_employer' => $targetIsEmployer,
+            'target_has_seeker' => $targetUser->seeker ? 'yes' : 'no',
+            'target_has_employer' => $targetUser->employer ? 'yes' : 'no',
+            'target_is_active' => $targetUser->is_active,
+        ]);
+        
+        if ($userIsEmployer && $targetIsSeeker) {
             // Employer contacting seeker
             // Validate that target user has an active seeker profile
             if (!$targetUser->seeker || !$targetUser->is_active) {
@@ -321,7 +345,7 @@ class MessageController extends Controller
             $seekerId = $targetUser->seeker->id;
             $employerId = $user->employer->id;
             $subject = 'Diskusi Peluang Kerja dengan ' . $targetUser->name;
-        } elseif ($user->isSeeker() && $targetUser->isEmployer()) {
+        } elseif ($userIsSeeker && $targetIsEmployer) {
             // Seeker contacting employer
             // Validate that current user has an active seeker profile
             if (!$user->seeker || !$user->is_active) {
@@ -339,7 +363,41 @@ class MessageController extends Controller
             $employerId = $targetUser->employer->id;
             $subject = 'Pertanyaan tentang ' . $targetUser->employer->company_name;
         } else {
-            abort(400, 'Invalid contact attempt');
+            // Provide more detailed error message
+            $errorMsg = sprintf(
+                'Invalid contact attempt. Current user: %s (ID: %d, Role: %s), Target user: %s (ID: %d, Role: %s)',
+                $user->name,
+                $user->id,
+                $user->role,
+                $targetUser->name,
+                $targetUser->id,
+                $targetUser->role
+            );
+            
+            \Log::error('Invalid contact attempt', [
+                'current_user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'role' => $user->role,
+                    'is_employer' => $userIsEmployer,
+                    'is_seeker' => $userIsSeeker,
+                    'has_employer' => $user->employer ? 'yes' : 'no',
+                    'has_seeker' => $user->seeker ? 'yes' : 'no',
+                ],
+                'target_user' => [
+                    'id' => $targetUser->id,
+                    'name' => $targetUser->name,
+                    'role' => $targetUser->role,
+                    'is_employer' => $targetIsEmployer,
+                    'is_seeker' => $targetIsSeeker,
+                    'has_employer' => $targetUser->employer ? 'yes' : 'no',
+                    'has_seeker' => $targetUser->seeker ? 'yes' : 'no',
+                    'is_active' => $targetUser->is_active,
+                ]
+            ]);
+            
+            return redirect()->back()
+                ->with('error', 'Tidak dapat mengirim pesan. Pastikan Anda adalah rekruter dan kandidat adalah pencari kerja yang aktif.');
         }
         
         // Check if conversation already exists (without specific job)

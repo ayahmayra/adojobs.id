@@ -12,15 +12,48 @@ class ResumeController extends Controller
      */
     public function show(string $slug)
     {
+        // First, try to find user by slug (without strict filters)
         $user = User::where('resume_slug', $slug)
-            ->where('role', 'seeker')
-            ->where('is_active', true)
             ->with('seeker')
-            ->firstOrFail();
+            ->first();
+        
+        // If user not found, log and return 404
+        if (!$user) {
+            \Log::warning('Resume slug not found', [
+                'slug' => $slug,
+                'request_url' => request()->fullUrl(),
+            ]);
+            abort(404, 'Resume tidak ditemukan. Slug tidak valid.');
+        }
+        
+        // Check if user is a seeker
+        if (!$user->isSeeker()) {
+            \Log::warning('Resume access denied - user is not seeker', [
+                'slug' => $slug,
+                'user_id' => $user->id,
+                'user_role' => $user->role,
+            ]);
+            abort(404, 'Resume tidak ditemukan. User bukan pencari kerja.');
+        }
+        
+        // Check if user is active
+        if (!$user->is_active) {
+            \Log::warning('Resume access denied - user is not active', [
+                'slug' => $slug,
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+            ]);
+            abort(404, 'Resume tidak ditemukan. Profil tidak aktif.');
+        }
         
         // Check if user has seeker profile
         if (!$user->seeker) {
-            abort(404, 'Resume not found');
+            \Log::warning('Resume access denied - user has no seeker profile', [
+                'slug' => $slug,
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+            ]);
+            abort(404, 'Resume tidak ditemukan. Profil pencari kerja tidak lengkap.');
         }
         
         // Check if employer has favorited this seeker

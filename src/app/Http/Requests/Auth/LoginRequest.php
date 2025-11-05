@@ -49,6 +49,20 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Check if user is active after authentication
+        $user = Auth::user();
+        if (!$user->is_active) {
+            // Logout the user since they're not active
+            Auth::logout();
+            $this->session()->invalidate();
+            $this->session()->regenerateToken();
+            
+            // Redirect to pending activation page
+            throw ValidationException::withMessages([
+                'email' => 'Akun Anda belum diaktifkan. Silakan tunggu hingga admin mengaktifkan akun Anda.',
+            ])->errorBag('default')->redirectTo(route('account.pending'));
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

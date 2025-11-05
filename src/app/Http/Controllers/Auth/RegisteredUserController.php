@@ -41,7 +41,7 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'role' => $request->role,
             'password' => Hash::make($request->password),
-            'is_active' => true, // Auto activate new users
+            'is_active' => false, // New users need admin activation
             'resume_slug' => User::generateResumeSlug($request->email), // Auto generate resume slug
         ]);
 
@@ -58,8 +58,10 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        // Don't auto-login if user is not active
+        // Redirect to pending activation page
+        return redirect()->route('account.pending')
+            ->with('email', $user->email)
+            ->with('success', 'Pendaftaran berhasil! Akun Anda sedang menunggu aktivasi dari admin.');
     }
 }

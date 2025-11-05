@@ -14,7 +14,11 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::active()
-            ->withCount('jobs')
+            ->withCount(['jobs' => function($query) {
+                $query->whereHas('employer.user', function($q) {
+                    $q->where('is_active', true);
+                });
+            }])
             ->orderBy('order')
             ->get();
 
@@ -32,6 +36,9 @@ class CategoryController extends Controller
                 $query->whereNull('application_deadline')
                       ->orWhere('application_deadline', '>=', now());
             })
+            ->whereHas('employer.user', function($q) {
+                $q->where('is_active', true);
+            })
             ->with(['employer', 'category'])
             ->latest()
             ->paginate(15);
@@ -39,7 +46,11 @@ class CategoryController extends Controller
         // Get related categories (other active categories)
         $relatedCategories = Category::active()
             ->where('id', '!=', $category->id)
-            ->withCount('jobs')
+            ->withCount(['jobs' => function($query) {
+                $query->whereHas('employer.user', function($q) {
+                    $q->where('is_active', true);
+                });
+            }])
             ->orderBy('order')
             ->take(6)
             ->get();

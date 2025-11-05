@@ -28,6 +28,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Check if user is active (double check)
+        $user = Auth::user();
+        if (!$user->is_active) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            return redirect()->route('account.pending')
+                ->with('email', $user->email);
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

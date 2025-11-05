@@ -17,11 +17,12 @@ class CheckActiveUser
     public function handle(Request $request, Closure $next): Response
     {
         if (auth()->check() && !auth()->user()->is_active) {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-            
-            return redirect()->route('login')->with('error', 'Your account has been deactivated. Please contact support.');
+            // Don't logout, just redirect to pending page
+            // This allows user to see their email and contact admin
+            if (!$request->routeIs('account.pending')) {
+                return redirect()->route('account.pending')
+                    ->with('email', auth()->user()->email);
+            }
         }
 
         return $next($request);

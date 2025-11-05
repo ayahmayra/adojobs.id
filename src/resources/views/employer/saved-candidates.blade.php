@@ -160,10 +160,14 @@
                             </a>
                             @endif
 
-                            <a href="mailto:{{ $user->email }}" 
-                               class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg transition hover:bg-gray-50">
-                                Kirim Email
-                            </a>
+                            <form action="{{ route('messages.start') }}" method="POST" class="inline">
+                                @csrf
+                                <input type="hidden" name="user_id" value="{{ $user->id }}">
+                                <button type="submit"
+                                        class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg transition hover:bg-gray-50">
+                                    Kirim Pesan
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

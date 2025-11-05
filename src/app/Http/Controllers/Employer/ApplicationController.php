@@ -19,7 +19,11 @@ class ApplicationController extends Controller
         $employer = auth()->user()->employer;
         $jobIds = $employer->jobs()->pluck('id');
 
-        $query = Application::whereIn('job_id', $jobIds)->with(['job', 'seeker.user']);
+        $query = Application::whereIn('job_id', $jobIds)
+            ->whereHas('seeker.user', function($q) {
+                $q->where('is_active', true);
+            })
+            ->with(['job', 'seeker.user']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);

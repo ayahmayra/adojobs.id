@@ -38,6 +38,11 @@ class EmployerController extends Controller
      */
     public function show(Employer $employer)
     {
+        // Check if employer's user is active
+        if (!$employer->user || !$employer->user->is_active) {
+            abort(404, 'Profil rekruter tidak ditemukan atau tidak aktif.');
+        }
+
         $employer->load(['user', 'jobs' => function($query) {
             $query->where('status', 'published')
                   ->where('application_deadline', '>=', now())

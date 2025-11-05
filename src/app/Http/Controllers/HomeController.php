@@ -16,11 +16,17 @@ class HomeController extends Controller
     {
         $featuredJobs = Job::active()
             ->featured()
+            ->whereHas('employer.user', function($q) {
+                $q->where('is_active', true);
+            })
             ->with(['employer', 'category'])
             ->take(6)
             ->get();
 
         $recentJobs = Job::active()
+            ->whereHas('employer.user', function($q) {
+                $q->where('is_active', true);
+            })
             ->with(['employer', 'category'])
             ->latest('published_at')
             ->take(8)
@@ -29,14 +35,23 @@ class HomeController extends Controller
         $categories = Category::active()
             ->ordered()
             ->withCount(['jobs' => function ($query) {
-                $query->active();
+                $query->active()
+                    ->whereHas('employer.user', function($q) {
+                        $q->where('is_active', true);
+                    });
             }])
             ->take(8)
             ->get();
 
         $stats = [
-            'total_jobs' => Job::active()->count(),
-            'total_companies' => Employer::verified()->count(),
+            'total_jobs' => Job::active()
+                ->whereHas('employer.user', function($q) {
+                    $q->where('is_active', true);
+                })
+                ->count(),
+            'total_companies' => Employer::whereHas('user', function($q) {
+                $q->where('is_active', true);
+            })->count(),
             'total_categories' => Category::active()->count(),
         ];
 

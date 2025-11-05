@@ -130,8 +130,8 @@
             <p class="mb-6 text-gray-600">
                 Start saving jobs you're interested in for easy access later!
             </p>
-            <a href="{{ route('seeker.jobs.index') }}" class="inline-block px-6 py-3 text-white bg-indigo-600 rounded-lg transition hover:bg-indigo-700">
-                Browse Jobs
+            <a href="{{ route('jobs.index') }}" class="inline-block px-6 py-3 text-white bg-indigo-600 rounded-lg transition hover:bg-indigo-700">
+                Jelajahi Lowongan
             </a>
         </div>
     @endif

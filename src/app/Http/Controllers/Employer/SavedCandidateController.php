@@ -22,6 +22,9 @@ class SavedCandidateController extends Controller
         }
 
         $savedCandidates = $employer->savedCandidates()
+            ->whereHas('seeker.user', function($q) {
+                $q->where('is_active', true);
+            })
             ->with(['seeker.user'])
             ->latest()
             ->paginate(20);

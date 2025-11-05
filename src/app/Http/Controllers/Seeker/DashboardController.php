@@ -64,48 +64,5 @@ class DashboardController extends Controller
             'recentConversations'
         ));
     }
-
-    /**
-     * Browse all available jobs
-     */
-    public function browseJobs(Request $request)
-    {
-        $query = \App\Models\Job::query()
-            ->with(['employer', 'category'])
-            ->where('status', 'published')
-            ->where(function($q) {
-                $q->whereNull('application_deadline')
-                  ->orWhere('application_deadline', '>=', now());
-            });
-
-        // Search by keyword
-        if ($request->filled('keyword')) {
-            $keyword = $request->keyword;
-            $query->where(function ($q) use ($keyword) {
-                $q->where('title', 'like', "%{$keyword}%")
-                  ->orWhere('description', 'like', "%{$keyword}%");
-            });
-        }
-
-        // Filter by location
-        if ($request->filled('location')) {
-            $query->where('city', 'like', "%{$request->location}%");
-        }
-
-        // Filter by category
-        if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
-        }
-
-        // Filter by job type
-        if ($request->filled('job_type')) {
-            $query->where('job_type', $request->job_type);
-        }
-
-        $jobs = $query->latest('created_at')->paginate(15);
-        $categories = \App\Models\Category::orderBy('name')->get();
-
-        return view('seeker.jobs', compact('jobs', 'categories'));
-    }
 }
 
