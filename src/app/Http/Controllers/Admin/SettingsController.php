@@ -20,6 +20,14 @@ class SettingsController extends Controller
             'site_logo' => Setting::get('site_logo'),
             'site_favicon' => Setting::get('site_favicon'),
             'site_banner' => Setting::get('site_banner'),
+            // Contact Information
+            'site_phone' => Setting::get('site_phone', '+62 812-3456-7890'),
+            'site_email' => Setting::get('site_email', 'info@adojobs.id'),
+            'site_address' => Setting::get('site_address', "Jl. Raya Bengkalis No. 123\nKecamatan Bengkalis\nKabupaten Bengkalis, Riau 28711"),
+            'site_whatsapp' => Setting::get('site_whatsapp', '6281234567890'),
+            'site_hours_monday_friday' => Setting::get('site_hours_monday_friday', '08:00 - 17:00 WIB'),
+            'site_hours_saturday' => Setting::get('site_hours_saturday', '08:00 - 12:00 WIB'),
+            'site_hours_sunday' => Setting::get('site_hours_sunday', 'Tutup'),
         ];
 
         return view('admin.settings.index', compact('settings'));
@@ -36,11 +44,28 @@ class SettingsController extends Controller
             'site_logo' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
             'site_favicon' => 'nullable|image|mimes:png,ico,jpg,jpeg|max:1024',
             'site_banner' => 'nullable|image|mimes:png,jpg,jpeg|max:5120',
+            // Contact Information
+            'site_phone' => 'nullable|string|max:255',
+            'site_email' => 'nullable|email|max:255',
+            'site_address' => 'nullable|string|max:500',
+            'site_whatsapp' => 'nullable|string|max:50',
+            'site_hours_monday_friday' => 'nullable|string|max:100',
+            'site_hours_saturday' => 'nullable|string|max:100',
+            'site_hours_sunday' => 'nullable|string|max:100',
         ]);
 
         // Update site name and description
         Setting::set('site_name', $request->site_name, 'string', 'general');
         Setting::set('site_description', $request->site_description, 'string', 'general');
+        
+        // Update contact information
+        Setting::set('site_phone', $request->site_phone, 'string', 'contact');
+        Setting::set('site_email', $request->site_email, 'string', 'contact');
+        Setting::set('site_address', $request->site_address, 'string', 'contact');
+        Setting::set('site_whatsapp', $request->site_whatsapp, 'string', 'contact');
+        Setting::set('site_hours_monday_friday', $request->site_hours_monday_friday, 'string', 'contact');
+        Setting::set('site_hours_saturday', $request->site_hours_saturday, 'string', 'contact');
+        Setting::set('site_hours_sunday', $request->site_hours_sunday, 'string', 'contact');
 
         // Handle logo upload
         if ($request->hasFile('site_logo')) {

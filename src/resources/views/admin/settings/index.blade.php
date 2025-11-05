@@ -211,6 +211,137 @@
                     </div>
                 </div>
 
+                <!-- Contact Information Section -->
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Informasi Kontak</h3>
+                        <p class="text-sm text-gray-600">Kelola informasi kontak yang ditampilkan di halaman contact.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                        <!-- Left Column -->
+                        <div class="space-y-6">
+                            <!-- Phone -->
+                            <div>
+                                <label for="site_phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Nomor Telepon
+                                </label>
+                                <input type="text" 
+                                       name="site_phone" 
+                                       id="site_phone" 
+                                       value="{{ old('site_phone', $settings['site_phone']) }}"
+                                       placeholder="+62 812-3456-7890"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('site_phone') border-red-500 @enderror">
+                                <p class="mt-1 text-xs text-gray-500">Contoh: +62 812-3456-7890</p>
+                                @error('site_phone')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Email -->
+                            <div>
+                                <label for="site_email" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Email
+                                </label>
+                                <input type="email" 
+                                       name="site_email" 
+                                       id="site_email" 
+                                       value="{{ old('site_email', $settings['site_email']) }}"
+                                       placeholder="info@adojobs.id"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('site_email') border-red-500 @enderror">
+                                @error('site_email')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- WhatsApp -->
+                            <div>
+                                <label for="site_whatsapp" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Nomor WhatsApp
+                                </label>
+                                <input type="text" 
+                                       name="site_whatsapp" 
+                                       id="site_whatsapp" 
+                                       value="{{ old('site_whatsapp', $settings['site_whatsapp']) }}"
+                                       placeholder="6281234567890"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('site_whatsapp') border-red-500 @enderror">
+                                <p class="mt-1 text-xs text-gray-500">Hanya angka tanpa spasi atau tanda hubung. Contoh: 6281234567890</p>
+                                @error('site_whatsapp')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Address -->
+                            <div>
+                                <label for="site_address" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Alamat
+                                </label>
+                                <textarea name="site_address" 
+                                          id="site_address" 
+                                          rows="4"
+                                          placeholder="Jl. Raya Bengkalis No. 123&#10;Kecamatan Bengkalis&#10;Kabupaten Bengkalis, Riau 28711"
+                                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('site_address') border-red-500 @enderror">{{ old('site_address', $settings['site_address']) }}</textarea>
+                                <p class="mt-1 text-xs text-gray-500">Gunakan baris baru untuk setiap baris alamat</p>
+                                @error('site_address')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="space-y-6">
+                            <!-- Hours Monday-Friday -->
+                            <div>
+                                <label for="site_hours_monday_friday" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Jam Operasional (Senin - Jumat)
+                                </label>
+                                <input type="text" 
+                                       name="site_hours_monday_friday" 
+                                       id="site_hours_monday_friday" 
+                                       value="{{ old('site_hours_monday_friday', $settings['site_hours_monday_friday']) }}"
+                                       placeholder="08:00 - 17:00 WIB"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('site_hours_monday_friday') border-red-500 @enderror">
+                                @error('site_hours_monday_friday')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Hours Saturday -->
+                            <div>
+                                <label for="site_hours_saturday" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Jam Operasional (Sabtu)
+                                </label>
+                                <input type="text" 
+                                       name="site_hours_saturday" 
+                                       id="site_hours_saturday" 
+                                       value="{{ old('site_hours_saturday', $settings['site_hours_saturday']) }}"
+                                       placeholder="08:00 - 12:00 WIB"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('site_hours_saturday') border-red-500 @enderror">
+                                @error('site_hours_saturday')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Hours Sunday -->
+                            <div>
+                                <label for="site_hours_sunday" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Jam Operasional (Minggu)
+                                </label>
+                                <input type="text" 
+                                       name="site_hours_sunday" 
+                                       id="site_hours_sunday" 
+                                       value="{{ old('site_hours_sunday', $settings['site_hours_sunday']) }}"
+                                       placeholder="Tutup"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('site_hours_sunday') border-red-500 @enderror">
+                                <p class="mt-1 text-xs text-gray-500">Contoh: Tutup, atau 08:00 - 12:00 WIB</p>
+                                @error('site_hours_sunday')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Submit Button -->
                 <div class="mt-6 flex justify-end">
                     <button type="submit" 
