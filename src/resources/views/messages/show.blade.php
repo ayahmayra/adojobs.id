@@ -9,6 +9,18 @@
         @endif
     </x-slot>
 
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Percakapan</h1>
+                <p class="mt-1 text-sm text-gray-600">{{ $conversation->subject }}</p>
+            </div>
+            <a href="{{ route('messages.index') }}" class="text-gray-600 hover:text-gray-900">
+                ← Kembali
+            </a>
+        </div>
+    </x-slot>
+
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 h-[calc(100vh-8rem)]">
         <div class="flex flex-col h-full">
             <!-- Chat Header -->

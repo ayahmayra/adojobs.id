@@ -6,7 +6,12 @@
     </x-slot>
 
     <x-slot name="header">
-        Kandidat Favorit
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Kandidat Favorit</h1>
+                <p class="mt-1 text-sm text-gray-600">Kandidat yang telah Anda simpan</p>
+            </div>
+        </div>
     </x-slot>
 
     @if($savedCandidates->count() > 0)

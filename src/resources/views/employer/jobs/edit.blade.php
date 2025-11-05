@@ -6,10 +6,13 @@
     </x-slot>
 
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <span>Edit Job</span>
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Edit Lowongan</h1>
+                <p class="mt-1 text-sm text-gray-600">Ubah informasi lowongan pekerjaan</p>
+            </div>
             <a href="{{ route('employer.jobs.show', $job) }}" class="text-gray-600 hover:text-gray-900">
-                ← Back to Job Details
+                ← Kembali
             </a>
         </div>
     </x-slot>

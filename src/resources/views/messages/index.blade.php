@@ -9,6 +9,15 @@
         @endif
     </x-slot>
 
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Pesan</h1>
+                <p class="mt-1 text-sm text-gray-600">Kelola semua pesan dan percakapan Anda</p>
+            </div>
+        </div>
+    </x-slot>
+
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 h-[calc(100vh-8rem)]">
         <div class="flex h-full">
             <!-- Left Sidebar - Conversations List -->

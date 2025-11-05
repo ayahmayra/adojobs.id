@@ -29,30 +29,43 @@
     {{-- Header --}}
     <x-header />
 
+    @php
+        // Get banner from settings
+        $bannerPath = \App\Models\Setting::get('site_banner');
+        $bannerUrl = $bannerPath ? asset('storage/' . $bannerPath) : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600';
+    @endphp
+
     {{-- Hero Section --}}
-    <section class="overflow-hidden relative pt-20 pb-32 bg-gradient-to-br from-indigo-50 via-white to-blue-50">
-        {{-- Background Pattern --}}
-        <div class="absolute inset-0 opacity-10">
+    <section class="overflow-hidden relative pt-16 pb-16 lg:pt-20 lg:pb-32 bg-gradient-to-br from-indigo-50 via-white to-blue-50">
+        {{-- Mobile Background Banner (hanya di mobile) --}}
+        <div class="absolute top-0 left-0 right-0 h-full lg:hidden" 
+             style="background-image: url('{{ $bannerUrl }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+        
+        {{-- Mobile Overlay (hanya di mobile) --}}
+        <div class="absolute top-0 left-0 right-0 h-full bg-black/50 lg:hidden"></div>
+        
+        {{-- Background Pattern (hanya desktop) --}}
+        <div class="hidden lg:block absolute inset-0 opacity-10">
             <div class="absolute top-0 right-0 w-96 h-96 bg-indigo-400 rounded-full filter blur-3xl"></div>
             <div class="absolute bottom-0 left-0 w-96 h-96 bg-blue-400 rounded-full filter blur-3xl"></div>
         </div>
 
         <div class="relative z-10 px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 gap-12 items-center lg:grid-cols-2">
+            <div class="grid grid-cols-1 gap-8 lg:gap-12 items-center lg:grid-cols-2">
                 {{-- Left Content --}}
                 <div>
-                    <div class="inline-flex items-center px-4 py-2 mb-6 text-sm font-medium text-indigo-700 bg-indigo-100 rounded-full">
+                    <div class="inline-flex items-center px-4 py-2 mb-4 lg:mb-6 text-sm font-medium text-white bg-white/20 backdrop-blur-sm rounded-full lg:text-indigo-700 lg:bg-indigo-100">
                         <svg class="mr-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                         </svg>
                         Tepercaya oleh 300+ Perusahaan
                     </div>
                     
-                    <h1 class="mb-6 text-5xl font-bold leading-tight text-gray-900 lg:text-6xl">
-                        Silahkan cari <span class="text-indigo-600">Pekerjaan</span> yang tepat untuk kamu!
+                    <h1 class="mb-4 lg:mb-6 text-3xl lg:text-5xl xl:text-6xl font-bold leading-tight text-white lg:text-gray-900">
+                        Silahkan cari <span class="text-indigo-300 lg:text-indigo-600">Pekerjaan</span> yang tepat untuk kamu!
                     </h1>
                     
-                    <p class="mb-8 text-xl leading-relaxed text-gray-600">
+                    <p class="mb-6 lg:mb-8 text-base lg:text-xl leading-relaxed text-white/90 lg:text-gray-600">
                         Temukan karier impian Anda atau ciptakan tim impian di AdoJobs.id. Dengan fitur lengkap dan mudah digunakan, kami menjembatani pelamar kerja dengan perusahaan impian mereka.
                     </p>
 
@@ -91,14 +104,14 @@
                     </form>
 
                     {{-- Popular Keywords --}}
-                    <div class="mt-6">
-                        <p class="mb-3 text-sm text-gray-600"><span class="font-semibold">Pencarian populer:</span></p>
+                    <div class="mt-4 lg:mt-6">
+                        <p class="mb-2 lg:mb-3 text-sm text-white/90 lg:text-gray-600"><span class="font-semibold">Pencarian populer:</span></p>
                         <div class="flex flex-wrap gap-2">
-                            <a href="#" class="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-full transition hover:bg-indigo-100 hover:text-indigo-700">Designer</a>
-                            <a href="#" class="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-full transition hover:bg-indigo-100 hover:text-indigo-700">Developer</a>
-                            <a href="#" class="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-full transition hover:bg-indigo-100 hover:text-indigo-700">Web</a>
-                            <a href="#" class="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-full transition hover:bg-indigo-100 hover:text-indigo-700">IOS</a>
-                            <a href="#" class="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-full transition hover:bg-indigo-100 hover:text-indigo-700">Senior</a>
+                            <a href="#" class="px-4 py-2 text-sm text-white bg-white/20 backdrop-blur-sm rounded-full transition hover:bg-white/30 lg:text-gray-700 lg:bg-gray-100 lg:hover:bg-indigo-100 lg:hover:text-indigo-700">Designer</a>
+                            <a href="#" class="px-4 py-2 text-sm text-white bg-white/20 backdrop-blur-sm rounded-full transition hover:bg-white/30 lg:text-gray-700 lg:bg-gray-100 lg:hover:bg-indigo-100 lg:hover:text-indigo-700">Developer</a>
+                            <a href="#" class="px-4 py-2 text-sm text-white bg-white/20 backdrop-blur-sm rounded-full transition hover:bg-white/30 lg:text-gray-700 lg:bg-gray-100 lg:hover:bg-indigo-100 lg:hover:text-indigo-700">Web</a>
+                            <a href="#" class="px-4 py-2 text-sm text-white bg-white/20 backdrop-blur-sm rounded-full transition hover:bg-white/30 lg:text-gray-700 lg:bg-gray-100 lg:hover:bg-indigo-100 lg:hover:text-indigo-700">IOS</a>
+                            <a href="#" class="px-4 py-2 text-sm text-white bg-white/20 backdrop-blur-sm rounded-full transition hover:bg-white/30 lg:text-gray-700 lg:bg-gray-100 lg:hover:bg-indigo-100 lg:hover:text-indigo-700">Senior</a>
                         </div>
                     </div>
                 </div>
@@ -106,7 +119,7 @@
                 {{-- Right Image --}}
                 <div class="hidden relative lg:block">
                     <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600" alt="Professional" class="rounded-3xl shadow-2xl">
+                        <img style="width: 100%" src="{{ $bannerUrl }}" alt="Professional" class="rounded-3xl shadow-2xl">
                         
                         {{-- Floating Cards --}}
                         <div class="absolute -top-6 -right-6 p-4 bg-white rounded-2xl shadow-xl">

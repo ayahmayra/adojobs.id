@@ -6,18 +6,16 @@
     </x-slot>
 
     <x-slot name="header">
-        Create New User
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Buat Pengguna Baru</h1>
+                <p class="mt-1 text-sm text-gray-600">Tambahkan pengguna baru ke platform</p>
+            </div>
+            <a href="{{ route('admin.users.index') }}" class="text-gray-600 hover:text-gray-900">
+                ← Kembali
+            </a>
+        </div>
     </x-slot>
-
-    {{-- Back Button --}}
-    <div class="mb-6">
-        <a href="{{ route('admin.users.index') }}" class="text-gray-600 hover:text-gray-900 inline-flex items-center">
-            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            Back to Users
-        </a>
-    </div>
 
     <div class="bg-white rounded-lg shadow-sm p-6">
         <form action="{{ route('admin.users.store') }}" method="POST" enctype="multipart/form-data">

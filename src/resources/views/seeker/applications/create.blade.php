@@ -6,18 +6,13 @@
     </x-slot>
 
     <x-slot name="header">
-        Lamar Pekerjaan
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Lamar Pekerjaan</h1>
+                <p class="mt-1 text-sm text-gray-600">Lengkapi formulir untuk melamar pekerjaan ini</p>
+            </div>
+        </div>
     </x-slot>
-
-    {{-- Back Button --}}
-    <div class="mb-6">
-        <a href="{{ route('jobs.show', $job->slug) }}" class="inline-flex items-center text-gray-600 hover:text-gray-900">
-            <svg class="mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            Kembali ke Detail Lowongan
-        </a>
-    </div>
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {{-- Application Form --}}

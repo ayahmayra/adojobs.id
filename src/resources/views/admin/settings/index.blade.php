@@ -6,13 +6,17 @@
     </x-slot>
 
     <x-slot name="header">
-        Pengaturan Website
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Pengaturan Website</h1>
+                <p class="mt-1 text-sm text-gray-600">Kelola pengaturan umum website</p>
+            </div>
+        </div>
     </x-slot>
 
 <div class="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
-    <!-- Header -->
+    <!-- Content -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Pengaturan Website</h1>
         <p class="mt-2 text-gray-600">Kelola pengaturan umum website AdoJobs.id</p>
     </div>
 
@@ -157,6 +161,56 @@
                     </div>
                 </div>
 
+                <!-- Banner Upload Section -->
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Banner Utama</h3>
+                        <p class="text-sm text-gray-600">Upload banner utama untuk ditampilkan di halaman website. Banner ini akan digunakan sesuai kebutuhan desain.</p>
+                    </div>
+
+                    <div>
+                        <label for="site_banner" class="block text-sm font-medium text-gray-700 mb-2">
+                            Banner Utama
+                        </label>
+                        
+                        @if($settings['site_banner'])
+                        <div class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex-1">
+                                    <span class="text-sm font-medium text-gray-700">Banner saat ini</span>
+                                    <p class="mt-1 text-xs text-gray-500">Klik gambar untuk melihat ukuran penuh</p>
+                                </div>
+                                <button type="button" 
+                                        onclick="deleteFile('banner')"
+                                        class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                    Hapus
+                                </button>
+                            </div>
+                            <div class="overflow-hidden rounded-lg border border-gray-200">
+                                <img src="{{ asset('storage/' . $settings['site_banner']) }}" 
+                                     alt="Banner" 
+                                     class="w-full h-auto object-contain max-h-64 cursor-pointer"
+                                     onclick="window.open('{{ asset('storage/' . $settings['site_banner']) }}', '_blank')"
+                                     title="Klik untuk melihat ukuran penuh">
+                            </div>
+                        </div>
+                        @endif
+
+                        <input type="file" 
+                               name="site_banner" 
+                               id="site_banner" 
+                               accept="image/png,image/jpeg,image/jpg"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('site_banner') border-red-500 @enderror">
+                        <p class="mt-1 text-xs text-gray-500">
+                            Format: PNG, JPG, JPEG. Max: 5MB. 
+                            <span class="text-gray-600 font-medium">Rekomendasi ukuran: 1920x600px atau rasio 16:5</span>
+                        </p>
+                        @error('site_banner')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
                 <!-- Submit Button -->
                 <div class="mt-6 flex justify-end">
                     <button type="submit" 
@@ -205,7 +259,13 @@
 <!-- JavaScript for file deletion -->
 <script>
 function deleteFile(type) {
-    if (!confirm(`Apakah Anda yakin ingin menghapus ${type === 'logo' ? 'logo' : 'favicon'}?`)) {
+    const typeNames = {
+        'logo': 'logo',
+        'favicon': 'favicon',
+        'banner': 'banner utama'
+    };
+    
+    if (!confirm(`Apakah Anda yakin ingin menghapus ${typeNames[type] || type}?`)) {
         return;
     }
 

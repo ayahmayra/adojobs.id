@@ -6,7 +6,12 @@
     </x-slot>
 
     <x-slot name="header">
-        Manage Categories
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Kelola Kategori</h1>
+                <p class="mt-1 text-sm text-gray-600">Kelola kategori lowongan pekerjaan</p>
+            </div>
+        </div>
     </x-slot>
 
     <!-- Success/Error Messages -->

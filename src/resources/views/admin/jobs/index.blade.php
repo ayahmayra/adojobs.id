@@ -6,7 +6,12 @@
     </x-slot>
 
     <x-slot name="header">
-        Kelola Lowongan Pekerjaan
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Kelola Lowongan Pekerjaan</h1>
+                <p class="mt-1 text-sm text-gray-600">Kelola semua lowongan pekerjaan di platform</p>
+            </div>
+        </div>
     </x-slot>
 
     {{-- Success Message --}}

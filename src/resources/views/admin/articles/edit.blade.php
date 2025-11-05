@@ -3,25 +3,19 @@
         <x-sidebar.admin />
     </x-slot>
 
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
-        <!-- Header -->
-        <div class="px-6 py-4 border-b border-gray-200">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Edit Artikel</h1>
-                    <p class="text-gray-600">{{ $article->title }}</p>
-                </div>
-                <a 
-                    href="{{ route('admin.articles.index') }}" 
-                    class="inline-flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-lg transition hover:bg-gray-200"
-                >
-                    <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    Kembali
-                </a>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Edit Artikel</h1>
+                <p class="mt-1 text-sm text-gray-600">{{ $article->title }}</p>
             </div>
+            <a href="{{ route('admin.articles.index') }}" class="text-gray-600 hover:text-gray-900">
+                ← Kembali
+            </a>
         </div>
+    </x-slot>
+
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
 
         <!-- Form -->
         <form action="{{ route('admin.articles.update', $article) }}" method="POST" enctype="multipart/form-data" class="p-6">

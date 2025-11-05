@@ -6,21 +6,18 @@
     </x-slot>
 
     <x-slot name="header">
-        Create New Category
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Buat Kategori Baru</h1>
+                <p class="mt-1 text-sm text-gray-600">Tambahkan kategori baru untuk lowongan pekerjaan</p>
+            </div>
+            <a href="{{ route('admin.categories.index') }}" class="text-gray-600 hover:text-gray-900">
+                ← Kembali
+            </a>
+        </div>
     </x-slot>
 
     <div class="max-w-3xl">
-        <!-- Back Button -->
-        <div class="mb-6">
-            <a href="{{ route('admin.categories.index') }}" 
-               class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900">
-                <svg class="mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
-                Back to Categories
-            </a>
-        </div>
-
         <!-- Form Card -->
         <div class="p-6 bg-white rounded-lg shadow-sm">
             <form action="{{ route('admin.categories.store') }}" method="POST">

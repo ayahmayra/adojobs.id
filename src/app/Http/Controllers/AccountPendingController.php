@@ -22,7 +22,7 @@ class AccountPendingController extends Controller
         // If user is not authenticated, also allow (e.g., from registration)
 
         // Get admin contact information from settings
-        $adminPhone = Setting::get('site_phone', '+62 812-3456-7890');
+        $adminPhone = Setting::get('site_phone', '+62 812-760-6351');
         $adminEmail = Setting::get('site_email', 'info@adojobs.id');
         
         // Format phone for WhatsApp (remove spaces, dashes, and other characters)

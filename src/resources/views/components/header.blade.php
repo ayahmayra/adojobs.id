@@ -1,6 +1,6 @@
 {{-- Header Component --}}
-<header class="sticky top-0 z-50 bg-white shadow-sm">
-    <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+<header class="sticky top-0 z-50 bg-white shadow-sm" x-data="{ mobileMenuOpen: false }">
+    <div class="px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-20">
             {{-- Logo --}}
             <div class="flex flex-shrink-0 items-center">

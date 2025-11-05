@@ -7,9 +7,12 @@
 
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <span>Pasang Lowongan Baru</span>
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Pasang Lowongan Baru</h1>
+                <p class="mt-1 text-sm text-gray-600">Buat lowongan pekerjaan baru untuk menarik kandidat terbaik</p>
+            </div>
             <a href="{{ route('employer.jobs.index') }}" class="text-gray-600 hover:text-gray-900">
-                ← Kembali ke Lowongan Saya
+                ← Kembali
             </a>
         </div>
     </x-slot>

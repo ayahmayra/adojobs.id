@@ -10,12 +10,11 @@
         @endif
     </x-slot>
 
-    <div class="mx-auto max-w-7xl">
-        {{-- Header --}}
-        <div class="flex justify-between items-center mb-6">
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
             <div>
-                <h1 class="text-3xl font-bold text-gray-900">My Profile</h1>
-                <p class="mt-1 text-sm text-gray-600">View and manage your personal information</p>
+                <h1 class="text-2xl font-bold text-gray-900">Profil Saya</h1>
+                <p class="mt-1 text-sm text-gray-600">Lihat dan kelola informasi pribadi Anda</p>
             </div>
             <div class="flex gap-3">
                 @if($user->hasPublicResume())
@@ -47,7 +46,9 @@
                 </a>
             </div>
         </div>
+    </x-slot>
 
+    <div class="mx-auto max-w-7xl">
         {{-- Profile Card --}}
         <div class="overflow-hidden mb-6 bg-white rounded-lg shadow-sm">
             <div class="p-6">

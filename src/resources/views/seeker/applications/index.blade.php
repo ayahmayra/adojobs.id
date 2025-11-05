@@ -6,7 +6,12 @@
     </x-slot>
 
     <x-slot name="header">
-        Lamaran Saya
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Lamaran Saya</h1>
+                <p class="mt-1 text-sm text-gray-600">Lihat status semua lamaran pekerjaan Anda</p>
+            </div>
+        </div>
     </x-slot>
 
     {{-- Filter Form --}}

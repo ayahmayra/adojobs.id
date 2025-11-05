@@ -6,7 +6,12 @@
     </x-slot>
 
     <x-slot name="header">
-        Manage Users
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Kelola Pengguna</h1>
+                <p class="mt-1 text-sm text-gray-600">Kelola semua pengguna di platform</p>
+            </div>
+        </div>
     </x-slot>
 
     {{-- Add New User Button (moved from header) --}}

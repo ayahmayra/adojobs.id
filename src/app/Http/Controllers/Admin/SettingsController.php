@@ -19,6 +19,7 @@ class SettingsController extends Controller
             'site_description' => Setting::get('site_description', 'Platform pencarian kerja terbaik di Pulau Bengkalis'),
             'site_logo' => Setting::get('site_logo'),
             'site_favicon' => Setting::get('site_favicon'),
+            'site_banner' => Setting::get('site_banner'),
         ];
 
         return view('admin.settings.index', compact('settings'));
@@ -34,6 +35,7 @@ class SettingsController extends Controller
             'site_description' => 'required|string|max:500',
             'site_logo' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
             'site_favicon' => 'nullable|image|mimes:png,ico,jpg,jpeg|max:1024',
+            'site_banner' => 'nullable|image|mimes:png,jpg,jpeg|max:5120',
         ]);
 
         // Update site name and description
@@ -66,6 +68,19 @@ class SettingsController extends Controller
             Setting::set('site_favicon', $faviconPath, 'string', 'general');
         }
 
+        // Handle banner upload
+        if ($request->hasFile('site_banner')) {
+            // Delete old banner if exists
+            $oldBanner = Setting::get('site_banner');
+            if ($oldBanner && Storage::disk('public')->exists($oldBanner)) {
+                Storage::disk('public')->delete($oldBanner);
+            }
+
+            // Store new banner
+            $bannerPath = $request->file('site_banner')->store('settings', 'public');
+            Setting::set('site_banner', $bannerPath, 'string', 'general');
+        }
+
         return redirect()->route('admin.settings.index')
             ->with('success', 'Pengaturan umum berhasil diperbarui.');
     }
@@ -76,10 +91,15 @@ class SettingsController extends Controller
     public function deleteFile(Request $request)
     {
         $request->validate([
-            'type' => 'required|in:logo,favicon',
+            'type' => 'required|in:logo,favicon,banner',
         ]);
 
-        $key = $request->type === 'logo' ? 'site_logo' : 'site_favicon';
+        $key = match($request->type) {
+            'logo' => 'site_logo',
+            'favicon' => 'site_favicon',
+            'banner' => 'site_banner',
+            default => 'site_logo',
+        };
         $filePath = Setting::get($key);
 
         if ($filePath && Storage::disk('public')->exists($filePath)) {

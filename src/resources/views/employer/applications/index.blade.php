@@ -4,12 +4,14 @@
         <x-sidebar.employer />
     </x-slot>
 
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">Lamaran Masuk</h1>
-            <p class="mt-1 text-sm text-gray-600">Tinjau dan kelola lamaran pekerjaan</p>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Lamaran Masuk</h1>
+                <p class="mt-1 text-sm text-gray-600">Tinjau dan kelola lamaran pekerjaan</p>
+            </div>
         </div>
-    </div>
+    </x-slot>
 
     {{-- Filters --}}
     <div class="p-6 mb-6 bg-white rounded-lg shadow-sm">

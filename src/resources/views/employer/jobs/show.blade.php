@@ -4,23 +4,24 @@
         <x-sidebar.employer />
     </x-slot>
 
-    {{-- Back Button --}}
-    <div class="mb-6">
-        <a href="{{ route('employer.jobs.index') }}" 
-           class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            Back to My Jobs
-        </a>
-    </div>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Detail Lowongan</h1>
+                <p class="mt-1 text-sm text-gray-600">{{ $job->title }}</p>
+            </div>
+            <a href="{{ route('employer.jobs.index') }}" class="text-gray-600 hover:text-gray-900">
+                ← Kembali
+            </a>
+        </div>
+    </x-slot>
 
-    {{-- Header --}}
+    {{-- Job Details Card --}}
     <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div class="flex items-start justify-between mb-4">
             <div class="flex-1">
                 <div class="flex items-center gap-3 mb-2">
-                    <h1 class="text-3xl font-bold text-gray-900">{{ $job->title }}</h1>
+                    <h2 class="text-2xl font-bold text-gray-900">{{ $job->title }}</h2>
                     @php
                         $statusColors = [
                             'draft' => 'bg-gray-100 text-gray-800',

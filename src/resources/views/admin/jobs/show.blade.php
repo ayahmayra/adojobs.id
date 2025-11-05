@@ -6,18 +6,16 @@
     </x-slot>
 
     <x-slot name="header">
-        Job Details
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Detail Lowongan</h1>
+                <p class="mt-1 text-sm text-gray-600">Lihat detail lengkap lowongan pekerjaan</p>
+            </div>
+            <a href="{{ route('admin.jobs.index') }}" class="text-gray-600 hover:text-gray-900">
+                ← Kembali
+            </a>
+        </div>
     </x-slot>
-
-    {{-- Back Button --}}
-    <div class="mb-6">
-        <a href="{{ route('admin.jobs.index') }}" class="text-gray-600 hover:text-gray-900 inline-flex items-center">
-            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            Back to Jobs
-        </a>
-    </div>
 
     {{-- Success Message --}}
     @if(session('success'))

@@ -3,16 +3,13 @@
         <x-sidebar.admin />
     </x-slot>
 
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
-        <!-- Header -->
-        <div class="px-6 py-4 border-b border-gray-200">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Artikel</h1>
-                    <p class="text-gray-600">Kelola artikel dan panduan untuk pengguna</p>
-                </div>
-                <a 
-                    href="{{ route('admin.articles.create') }}" 
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Kelola Artikel</h1>
+                <p class="mt-1 text-sm text-gray-600">Kelola artikel dan panduan untuk pengguna</p>
+            </div>
+            <a href="{{ route('admin.articles.create') }}" 
                     class="inline-flex items-center px-4 py-2 text-white bg-indigo-600 rounded-lg transition hover:bg-indigo-700"
                 >
                     <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,7 +19,9 @@
                 </a>
             </div>
         </div>
+    </x-slot>
 
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
         <!-- Filters & Search -->
         <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
             <form method="GET" class="flex flex-col gap-4 sm:flex-row">
