@@ -3,7 +3,8 @@
 # Flow: Cloudflare -> NAT (103.130.82.202) -> NPM (10.10.10.42) -> This Caddy (10.10.10.33:80)
 
 # Main domain - HTTP only (SSL terminated at NPM)
-adojobs.id, www.adojobs.id {
+# Use explicit HTTP to prevent automatic HTTPS redirect
+http://adojobs.id, http://www.adojobs.id {
     # Reverse proxy to FrankenPHP container
     reverse_proxy adojobs_app:8080 {
         # Forward X-Forwarded-* headers from NPM to app
