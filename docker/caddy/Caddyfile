@@ -2,48 +2,113 @@
 # Receives HTTP requests from Nginx Proxy Manager (SSL handled by NPM)
 # Flow: Cloudflare -> NAT (103.130.82.202) -> NPM (10.10.10.42) -> This Caddy (10.10.10.33:80)
 
-# Main domain - HTTP only (SSL terminated at NPM)
-# Use explicit HTTP to prevent automatic HTTPS redirect
-http://adojobs.id, http://www.adojobs.id {
-    # Reverse proxy to FrankenPHP container
-    reverse_proxy adojobs_app:8080 {
-        # Forward X-Forwarded-* headers from NPM to app with fallbacks
-        # NPM will send: X-Forwarded-For, X-Forwarded-Proto, X-Real-IP, Host
-        # Use fallbacks to prevent "Uninitialized string offset" errors
-        header_up X-Real-IP {http.request.header.X-Real-IP}
-        header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
-        # Default to https if X-Forwarded-Proto not set (from NPM)
-        header_up X-Forwarded-Proto {http.request.header.X-Forwarded-Proto}
-        # Default to request Host if X-Forwarded-Host not set
-        header_up X-Forwarded-Host {http.request.header.Host}
-        # Always set Host header (required)
-        header_up Host adojobs.id
+# Default HTTP server - handles all requests on port 80
+# This will match requests by Host header
+:80 {
+    # Match requests by Host header
+    @adojobs_domain {
+        host adojobs.id
+    }
+    @www_adojobs_domain {
+        host www.adojobs.id
+    }
+    
+    # Handle adojobs.id domain (from NPM or direct)
+    handle @adojobs_domain {
+        reverse_proxy adojobs_app:8080 {
+            # Forward X-Forwarded-* headers from NPM
+            header_up X-Real-IP {http.request.header.X-Real-IP}
+            header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
+            header_up X-Forwarded-Proto {http.request.header.X-Forwarded-Proto}
+            header_up X-Forwarded-Host {http.request.header.Host}
+            # Always set Host header
+            header_up Host adojobs.id
+            
+            transport http {
+                dial_timeout 10s
+                response_header_timeout 30s
+            }
+        }
         
-        # Transport settings
-        transport http {
-            dial_timeout 10s
-            response_header_timeout 30s
+        # Security headers
+        header {
+            -Server
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            X-XSS-Protection "1; mode=block"
+            Referrer-Policy "strict-origin-when-cross-origin"
+            Permissions-Policy "geolocation=(), microphone=(), camera=()"
+        }
+        
+        encode gzip zstd
+        
+        log {
+            output stdout
+            format json
+            level INFO
         }
     }
     
-    # Security headers (HSTS will be added by NPM/Cloudflare)
-    header {
-        -Server
-        X-Frame-Options "SAMEORIGIN"
-        X-Content-Type-Options "nosniff"
-        X-XSS-Protection "1; mode=block"
-        Referrer-Policy "strict-origin-when-cross-origin"
-        Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    # Handle www.adojobs.id domain
+    handle @www_adojobs_domain {
+        reverse_proxy adojobs_app:8080 {
+            header_up X-Real-IP {http.request.header.X-Real-IP}
+            header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
+            header_up X-Forwarded-Proto {http.request.header.X-Forwarded-Proto}
+            header_up X-Forwarded-Host {http.request.header.Host}
+            header_up Host www.adojobs.id
+            
+            transport http {
+                dial_timeout 10s
+                response_header_timeout 30s
+            }
+        }
+        
+        header {
+            -Server
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            X-XSS-Protection "1; mode=block"
+        }
+        
+        encode gzip zstd
+        
+        log {
+            output stdout
+            format json
+            level INFO
+        }
     }
     
-    # Compression
-    encode gzip zstd
-    
-    # Logging
-    log {
-        output stdout
-        format json
-        level INFO
+    # Default: handle IP access (10.10.10.33) and other requests
+    handle {
+        reverse_proxy adojobs_app:8080 {
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto http
+            header_up X-Forwarded-Host {http.request.header.Host}
+            header_up Host {http.request.header.Host}
+            
+            transport http {
+                dial_timeout 10s
+                response_header_timeout 30s
+            }
+        }
+        
+        header {
+            -Server
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            X-XSS-Protection "1; mode=block"
+        }
+        
+        encode gzip zstd
+        
+        log {
+            output stdout
+            format json
+            level INFO
+        }
     }
     
     # Error handling
@@ -53,68 +118,5 @@ http://adojobs.id, http://www.adojobs.id {
         
         @4xx expression `{err.status_code} >= 400 && {err.status_code} < 500`
         respond @4xx "Not found" 404
-    }
-}
-
-# IP access (for testing/debugging) - HTTP only
-# This works immediately without DNS
-http://10.10.10.33 {
-    # Reverse proxy to FrankenPHP container
-    reverse_proxy adojobs_app:8080 {
-        header_up X-Real-IP {remote_host}
-        header_up X-Forwarded-For {remote_host}
-        header_up X-Forwarded-Proto http
-        header_up X-Forwarded-Host {host}
-        header_up Host {host}
-    }
-    
-    # Basic security headers (no HSTS for HTTP)
-    header {
-        -Server
-        X-Frame-Options "SAMEORIGIN"
-        X-Content-Type-Options "nosniff"
-        X-XSS-Protection "1; mode=block"
-    }
-    
-    # Compression
-    encode gzip zstd
-    
-    # Logging
-    log {
-        output stdout
-        format json
-        level INFO
-    }
-}
-
-# Default HTTP server (catch-all for any other requests)
-:80 {
-    # Reverse proxy to FrankenPHP container
-    reverse_proxy adojobs_app:8080 {
-        # Set headers with defaults to prevent errors
-        header_up X-Real-IP {remote_host}
-        header_up X-Forwarded-For {remote_host}
-        header_up X-Forwarded-Proto http
-        # Use Host from request, fallback to adojobs.id
-        header_up X-Forwarded-Host {http.request.header.Host}
-        header_up Host {http.request.header.Host}
-    }
-    
-    # Basic security headers
-    header {
-        -Server
-        X-Frame-Options "SAMEORIGIN"
-        X-Content-Type-Options "nosniff"
-        X-XSS-Protection "1; mode=block"
-    }
-    
-    # Compression
-    encode gzip zstd
-    
-    # Logging
-    log {
-        output stdout
-        format json
-        level INFO
     }
 }
