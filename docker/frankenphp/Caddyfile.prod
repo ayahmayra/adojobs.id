@@ -54,8 +54,10 @@
     respond @blocked 403
     
     # Laravel specific - block direct access to protected directories
+    # Note: /storage/* in URL maps to public/storage/* (symlink), which should be accessible
+    # We only block bootstrap/cache and vendor, not /storage/* because it's a valid public symlink
     @disallowed {
-        path /storage/* /bootstrap/cache/* /vendor/*
+        path /bootstrap/cache/* /vendor/*
     }
     respond @disallowed 403
     
