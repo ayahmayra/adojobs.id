@@ -119,6 +119,12 @@ cat .env.production
 - ✅ Konfigurasi aplikasi
 - ⚠️ APP_KEY masih perlu di-generate nanti
 
+**⚠️ PENTING:** Pastikan file `.env.production` benar-benar ada dan berisi password. Jika tidak, jalankan:
+```bash
+# Fix otomatis
+./fix-deployment.sh
+```
+
 ### 3.3 Update Caddyfile Email (PENTING!)
 
 ```bash
