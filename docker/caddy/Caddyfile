@@ -5,6 +5,13 @@
 # Default HTTP server - handles all requests on port 80
 # This will match requests by Host header
 :80 {
+    # Global logging configuration
+    log {
+        output stdout
+        format json
+        level INFO
+    }
+    
     # Match requests by Host header
     @adojobs_domain {
         host adojobs.id
@@ -41,12 +48,6 @@
         }
         
         encode gzip zstd
-        
-        log {
-            output stdout
-            format json
-            level INFO
-        }
     }
     
     # Handle www.adojobs.id domain
@@ -72,12 +73,6 @@
         }
         
         encode gzip zstd
-        
-        log {
-            output stdout
-            format json
-            level INFO
-        }
     }
     
     # Default: handle IP access (10.10.10.33) and other requests
@@ -103,12 +98,6 @@
         }
         
         encode gzip zstd
-        
-        log {
-            output stdout
-            format json
-            level INFO
-        }
     }
     
     # Error handling
