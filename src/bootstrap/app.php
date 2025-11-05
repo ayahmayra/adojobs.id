@@ -11,6 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust all proxies (safe behind Nginx Proxy Manager)
+        $middleware->trustProxies(at: '*');
+        
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'employer' => \App\Http\Middleware\EmployerMiddleware::class,

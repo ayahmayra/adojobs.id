@@ -1,23 +1,18 @@
 # Caddy Reverse Proxy Configuration for AdoJobs.id
-# Handles SSL/TLS termination and routes to FrankenPHP
+# Receives HTTP requests from Nginx Proxy Manager (SSL handled by NPM)
+# Flow: Cloudflare -> NAT (103.130.82.202) -> NPM (10.10.10.42) -> This Caddy (10.10.10.33:80)
 
-# Email for Let's Encrypt (required for automatic SSL)
-{
-    email nothing4ll@gmail.com
-    # Uncomment and configure if using Cloudflare DNS
-    # acme_dns cloudflare
-}
-
-# Main domain with HTTPS
+# Main domain - HTTP only (SSL terminated at NPM)
 adojobs.id, www.adojobs.id {
     # Reverse proxy to FrankenPHP container
     reverse_proxy adojobs_app:8080 {
-        # Headers
-        header_up X-Real-IP {remote_host}
-        header_up X-Forwarded-For {remote_host}
-        header_up X-Forwarded-Proto {scheme}
-        header_up X-Forwarded-Host {host}
-        header_up Host {host}
+        # Forward X-Forwarded-* headers from NPM to app
+        # NPM will send: X-Forwarded-For, X-Forwarded-Proto, X-Real-IP, Host
+        header_up X-Real-IP {http.request.header.X-Real-IP}
+        header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
+        header_up X-Forwarded-Proto {http.request.header.X-Forwarded-Proto}
+        header_up X-Forwarded-Host {http.request.header.Host}
+        header_up Host {http.request.header.Host}
         
         # Transport settings
         transport http {
@@ -26,7 +21,7 @@ adojobs.id, www.adojobs.id {
         }
     }
     
-    # Security headers
+    # Security headers (HSTS will be added by NPM/Cloudflare)
     header {
         -Server
         X-Frame-Options "SAMEORIGIN"
@@ -34,7 +29,6 @@ adojobs.id, www.adojobs.id {
         X-XSS-Protection "1; mode=block"
         Referrer-Policy "strict-origin-when-cross-origin"
         Permissions-Policy "geolocation=(), microphone=(), camera=()"
-        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     }
     
     # Compression
