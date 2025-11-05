@@ -3,7 +3,6 @@
 # Flow: Cloudflare -> NAT (103.130.82.202) -> NPM (10.10.10.42) -> This Caddy (10.10.10.33:80)
 
 # Default HTTP server - handles all requests on port 80
-# This will match requests by Host header
 :80 {
     # Global logging configuration
     log {
@@ -26,9 +25,13 @@
             # Forward X-Forwarded-* headers from NPM
             header_up X-Real-IP {http.request.header.X-Real-IP}
             header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
+            # Forward protocol (https from NPM/Cloudflare)
             header_up X-Forwarded-Proto {http.request.header.X-Forwarded-Proto}
-            header_up X-Forwarded-Host {http.request.header.Host}
-            # Always set Host header
+            # Set port explicitly (443 for HTTPS)
+            header_up X-Forwarded-Port 443
+            # Set host explicitly
+            header_up X-Forwarded-Host adojobs.id
+            # Always set Host header (required for Symfony Request)
             header_up Host adojobs.id
             
             transport http {
@@ -56,7 +59,8 @@
             header_up X-Real-IP {http.request.header.X-Real-IP}
             header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
             header_up X-Forwarded-Proto {http.request.header.X-Forwarded-Proto}
-            header_up X-Forwarded-Host {http.request.header.Host}
+            header_up X-Forwarded-Port 443
+            header_up X-Forwarded-Host www.adojobs.id
             header_up Host www.adojobs.id
             
             transport http {
@@ -81,6 +85,7 @@
             header_up X-Real-IP {remote_host}
             header_up X-Forwarded-For {remote_host}
             header_up X-Forwarded-Proto http
+            header_up X-Forwarded-Port 80
             header_up X-Forwarded-Host {http.request.header.Host}
             header_up Host {http.request.header.Host}
             
