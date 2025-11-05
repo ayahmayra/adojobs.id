@@ -19,6 +19,7 @@ Thumbs.db
 
 # Environment files at root (use src/.env instead)
 .env
+.env.production
 
 # Temporary files
 *.tmp

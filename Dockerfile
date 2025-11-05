@@ -88,8 +88,8 @@ RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache \
 ENV APP_ENV=production \
     APP_DEBUG=false
 
-# Copy FrankenPHP Caddyfile (same as development for consistency)
-COPY docker/frankenphp/Caddyfile /etc/caddy/Caddyfile
+# Copy FrankenPHP Caddyfile for production
+COPY docker/frankenphp/Caddyfile.prod /etc/caddy/Caddyfile
 
 # Expose port
 EXPOSE 8080

@@ -1,0 +1,92 @@
+{
+    frankenphp {
+        # Worker configuration for production
+        num_threads 8
+        worker {
+            file /app/public/index.php
+            num 2
+        }
+    }
+    order php_server before file_server
+}
+
+# Internal port (accessed by reverse proxy)
+:8080 {
+    root * /app/public
+    
+    # Enable compression for better performance
+    encode gzip zstd
+    
+    # PHP FrankenPHP with worker mode
+    php_server
+    
+    # Security headers
+    header {
+        -Server
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "no-referrer-when-downgrade"
+    }
+    
+    # Static file caching with versioning support
+    @static {
+        file
+        path *.ico *.css *.js *.gif *.jpg *.jpeg *.png *.svg *.woff *.woff2 *.ttf *.eot *.webp
+    }
+    header @static {
+        Cache-Control "public, max-age=31536000, immutable"
+        Vary "Accept-Encoding"
+    }
+    
+    # Images caching
+    @images {
+        path *.jpg *.jpeg *.png *.gif *.ico *.svg *.webp
+    }
+    header @images Cache-Control "public, max-age=86400"
+    
+    # Fonts caching
+    @fonts {
+        path *.woff *.woff2 *.ttf *.eot
+    }
+    header @fonts {
+        Cache-Control "public, max-age=31536000, immutable"
+        Access-Control-Allow-Origin "*"
+    }
+    
+    # Block access to sensitive files
+    @blocked {
+        path *.env* *.log *.sql *.sqlite .git/* .gitignore .gitattributes
+    }
+    respond @blocked 403
+    
+    # Laravel specific - block direct access to protected directories
+    @disallowed {
+        path /storage/* /bootstrap/cache/* /vendor/*
+    }
+    respond @disallowed 403
+    
+    # Handle Laravel's pretty URLs
+    try_files {path} {path}/ /index.php?{query}
+    
+    # Logging configuration
+    log {
+        output file /var/log/caddy/access.log {
+            roll_size 100mb
+            roll_keep 5
+            roll_keep_for 720h
+        }
+        format json
+        level INFO
+    }
+    
+    # Error handling
+    handle_errors {
+        @5xx expression `{err.status_code} >= 500 && {err.status_code} < 600`
+        respond @5xx "Service temporarily unavailable" 503
+        
+        @4xx expression `{err.status_code} >= 400 && {err.status_code} < 500`
+        respond @4xx "Not found" 404
+    }
+}
+

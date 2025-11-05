@@ -7,9 +7,12 @@ services:
       context: .
       dockerfile: Dockerfile
       target: production
+      args:
+        - BUILDKIT_INLINE_CACHE=1
     container_name: adojobs_app
-    ports:
-      - "8282:8080"
+    # Expose internal port only (accessed via reverse proxy)
+    expose:
+      - "8080"
     volumes:
       # Only mount storage directories for uploads/cache
       - ./src/storage/app:/app/storage/app
@@ -17,18 +20,18 @@ services:
       - frankenphp_cache:/data/caddy
     environment:
       # These should be overridden by .env file or set explicitly
-      - APP_NAME=AdoJobs
+      - APP_NAME=${APP_NAME:-AdoJobs.id}
       - APP_ENV=production
       - APP_DEBUG=false
-      - APP_URL=${APP_URL:-http://localhost:8282}
+      - APP_URL=${APP_URL:-https://adojobs.id}
       - APP_KEY=${APP_KEY}
       
       # Database
       - DB_CONNECTION=mysql
       - DB_HOST=db
       - DB_PORT=3306
-      - DB_DATABASE=${DB_DATABASE:-adojobs}
-      - DB_USERNAME=${DB_USERNAME:-adojobs}
+      - DB_DATABASE=${DB_DATABASE:-adojobs_prod}
+      - DB_USERNAME=${DB_USERNAME:-adojobs_user}
       - DB_PASSWORD=${DB_PASSWORD}
       
       # Redis
@@ -67,8 +70,8 @@ services:
     env_file:
       - .env.production
     environment:
-      - MYSQL_DATABASE=${DB_DATABASE:-adojobs}
-      - MYSQL_USER=${DB_USERNAME:-adojobs}
+      - MYSQL_DATABASE=${DB_DATABASE:-adojobs_prod}
+      - MYSQL_USER=${DB_USERNAME:-adojobs_user}
       - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
     volumes:
@@ -101,12 +104,39 @@ services:
       timeout: 3s
       retries: 5
 
+  # Reverse Proxy (Caddy) for SSL/TLS termination
+  proxy:
+    image: caddy:2-alpine
+    container_name: adojobs_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - adojobs_network
+    restart: unless-stopped
+    depends_on:
+      - app
+    healthcheck:
+      test: ["CMD", "caddy", "validate", "--config", "/etc/caddy/Caddyfile"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   mariadb_data:
     driver: local
   redis_data:
     driver: local
   frankenphp_cache:
+    driver: local
+  caddy_data:
+    driver: local
+  caddy_config:
     driver: local
 
 networks:
