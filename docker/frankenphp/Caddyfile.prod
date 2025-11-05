@@ -1,12 +1,5 @@
 {
-    frankenphp {
-        # Worker configuration for production
-        num_threads 8
-        worker {
-            file /app/public/index.php
-            num 2
-        }
-    }
+    frankenphp
     order php_server before file_server
 }
 
@@ -17,7 +10,7 @@
     # Enable compression for better performance
     encode gzip zstd
     
-    # PHP FrankenPHP with worker mode
+    # PHP FrankenPHP WITHOUT worker mode (same as development)
     php_server
     
     # Security headers
@@ -69,13 +62,12 @@
     # Handle Laravel's pretty URLs
     try_files {path} {path}/ /index.php?{query}
     
-    # Logging configuration
+    # File server for static assets (same as development)
+    file_server
+    
+    # Structured logging (same as development)
     log {
-        output file /var/log/caddy/access.log {
-            roll_size 100mb
-            roll_keep 5
-            roll_keep_for 720h
-        }
+        output stdout
         format json
         level INFO
     }
