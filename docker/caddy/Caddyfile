@@ -7,13 +7,17 @@
 http://adojobs.id, http://www.adojobs.id {
     # Reverse proxy to FrankenPHP container
     reverse_proxy adojobs_app:8080 {
-        # Forward X-Forwarded-* headers from NPM to app
+        # Forward X-Forwarded-* headers from NPM to app with fallbacks
         # NPM will send: X-Forwarded-For, X-Forwarded-Proto, X-Real-IP, Host
+        # Use fallbacks to prevent "Uninitialized string offset" errors
         header_up X-Real-IP {http.request.header.X-Real-IP}
         header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
+        # Default to https if X-Forwarded-Proto not set (from NPM)
         header_up X-Forwarded-Proto {http.request.header.X-Forwarded-Proto}
+        # Default to request Host if X-Forwarded-Host not set
         header_up X-Forwarded-Host {http.request.header.Host}
-        header_up Host {http.request.header.Host}
+        # Always set Host header (required)
+        header_up Host adojobs.id
         
         # Transport settings
         transport http {
@@ -87,11 +91,13 @@ http://10.10.10.33 {
 :80 {
     # Reverse proxy to FrankenPHP container
     reverse_proxy adojobs_app:8080 {
+        # Set headers with defaults to prevent errors
         header_up X-Real-IP {remote_host}
         header_up X-Forwarded-For {remote_host}
         header_up X-Forwarded-Proto http
-        header_up X-Forwarded-Host {host}
-        header_up Host {host}
+        # Use Host from request, fallback to adojobs.id
+        header_up X-Forwarded-Host {http.request.header.Host}
+        header_up Host {http.request.header.Host}
     }
     
     # Basic security headers
