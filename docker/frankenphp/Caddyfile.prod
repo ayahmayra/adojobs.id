@@ -47,7 +47,13 @@
         Access-Control-Allow-Origin "*"
     }
     
-    # Block access to sensitive files
+    # Handle Laravel's pretty URLs first
+    try_files {path} {path}/ /index.php?{query}
+    
+    # File server for static assets (must be before blocking rules)
+    file_server
+    
+    # Block access to sensitive files (after file_server)
     @blocked {
         path *.env* *.log *.sql *.sqlite .git/* .gitignore .gitattributes
     }
@@ -60,12 +66,6 @@
         path /bootstrap/cache/* /vendor/*
     }
     respond @disallowed 403
-    
-    # Handle Laravel's pretty URLs
-    try_files {path} {path}/ /index.php?{query}
-    
-    # File server for static assets (same as development)
-    file_server
     
     # Structured logging (same as development)
     log {
