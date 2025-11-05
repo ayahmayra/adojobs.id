@@ -24,7 +24,7 @@ services:
       - APP_ENV=production
       - APP_DEBUG=false
       - APP_URL=${APP_URL:-https://adojobs.id}
-      - APP_KEY=${APP_KEY}
+      - APP_KEY=${APP_KEY:-base64:CHANGE_THIS_ON_FIRST_DEPLOYMENT}
       
       # Database
       - DB_CONNECTION=mysql
@@ -72,8 +72,8 @@ services:
     environment:
       - MYSQL_DATABASE=${DB_DATABASE:-adojobs_prod}
       - MYSQL_USER=${DB_USERNAME:-adojobs_user}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-Jo9Ojq96JeCalRHeNVpm3pGtyUGjjy4y}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-Gb43QutnerQYnEvB8Yc2y3nPccEI7LcI}
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/conf.d/custom.cnf

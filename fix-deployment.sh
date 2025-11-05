@@ -48,9 +48,22 @@ echo -e "\n${YELLOW}[2/4] Stopping containers...${NC}"
 docker-compose -f docker-compose.prod.yml down 2>/dev/null || true
 echo -e "${GREEN}✓ Containers stopped${NC}"
 
-# Step 3: Start database first
-echo -e "\n${YELLOW}[3/4] Starting database...${NC}"
-docker-compose -f docker-compose.prod.yml up -d db
+# Step 3: Load environment variables
+echo -e "\n${YELLOW}[3/5] Loading environment variables...${NC}"
+if [ -f ".env.production" ]; then
+    set -a
+    source .env.production
+    set +a
+    echo -e "${GREEN}✓ Environment variables loaded${NC}"
+else
+    echo -e "${RED}✗ .env.production not found!${NC}"
+    exit 1
+fi
+
+# Step 4: Start database first with env_file
+echo -e "\n${YELLOW}[4/5] Starting database...${NC}"
+# Use --env-file to load variables for docker-compose substitution
+docker-compose -f docker-compose.prod.yml --env-file .env.production up -d db
 echo -e "${YELLOW}Waiting for database to initialize (30 seconds)...${NC}"
 sleep 30
 
@@ -65,9 +78,9 @@ else
     exit 1
 fi
 
-# Step 4: Start all services
-echo -e "\n${YELLOW}[4/4] Starting all services...${NC}"
-docker-compose -f docker-compose.prod.yml up -d
+# Step 5: Start all services with env_file
+echo -e "\n${YELLOW}[5/5] Starting all services...${NC}"
+docker-compose -f docker-compose.prod.yml --env-file .env.production up -d
 
 # Wait a bit
 sleep 10

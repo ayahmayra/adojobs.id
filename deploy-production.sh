@@ -40,10 +40,10 @@ if ! command -v docker-compose &> /dev/null; then
 fi
 
 echo -e "${GREEN}Step 1: Building Docker images...${NC}"
-docker-compose -f docker-compose.prod.yml build --no-cache
+docker-compose -f docker-compose.prod.yml --env-file .env.production build --no-cache
 
 echo -e "\n${GREEN}Step 2: Starting containers...${NC}"
-docker-compose -f docker-compose.prod.yml up -d
+docker-compose -f docker-compose.prod.yml --env-file .env.production up -d
 
 echo -e "\n${GREEN}Step 3: Waiting for services to be ready...${NC}"
 sleep 10
@@ -52,7 +52,7 @@ sleep 10
 echo -e "${YELLOW}Waiting for database...${NC}"
 timeout=60
 counter=0
-until docker-compose -f docker-compose.prod.yml exec -T db mysqladmin ping -h localhost --silent 2>/dev/null; do
+until docker-compose -f docker-compose.prod.yml --env-file .env.production exec -T db mysqladmin ping -h localhost --silent 2>/dev/null; do
     sleep 2
     counter=$((counter + 2))
     if [ $counter -ge $timeout ]; then
