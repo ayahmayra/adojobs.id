@@ -294,15 +294,47 @@ class MessageController extends Controller
     private function handleDirectContact(Request $request, $user)
     {
         $targetUserId = $request->user_id;
-        $targetUser = User::findOrFail($targetUserId);
+        $targetUser = User::with(['seeker', 'employer'])->findOrFail($targetUserId);
+        
+        // Also load current user's relationships if needed
+        if (!$user->relationLoaded('employer')) {
+            $user->load('employer');
+        }
+        if (!$user->relationLoaded('seeker')) {
+            $user->load('seeker');
+        }
         
         if ($user->isEmployer() && $targetUser->isSeeker()) {
             // Employer contacting seeker
+            // Validate that target user has an active seeker profile
+            if (!$targetUser->seeker || !$targetUser->is_active) {
+                return redirect()->back()
+                    ->with('error', 'Kandidat tidak aktif atau tidak memiliki profil lengkap.');
+            }
+            
+            // Validate that current user has an active employer profile
+            if (!$user->employer) {
+                return redirect()->back()
+                    ->with('error', 'Silakan lengkapi profil perusahaan terlebih dahulu.');
+            }
+            
             $seekerId = $targetUser->seeker->id;
             $employerId = $user->employer->id;
             $subject = 'Diskusi Peluang Kerja dengan ' . $targetUser->name;
         } elseif ($user->isSeeker() && $targetUser->isEmployer()) {
             // Seeker contacting employer
+            // Validate that current user has an active seeker profile
+            if (!$user->seeker || !$user->is_active) {
+                return redirect()->back()
+                    ->with('error', 'Silakan lengkapi profil Anda terlebih dahulu.');
+            }
+            
+            // Validate that target user has an active employer profile
+            if (!$targetUser->employer || !$targetUser->is_active) {
+                return redirect()->back()
+                    ->with('error', 'Rekruter tidak aktif atau tidak memiliki profil lengkap.');
+            }
+            
             $seekerId = $user->seeker->id;
             $employerId = $targetUser->employer->id;
             $subject = 'Pertanyaan tentang ' . $targetUser->employer->company_name;

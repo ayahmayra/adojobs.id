@@ -23,6 +23,14 @@ class ResumeController extends Controller
             abort(404, 'Resume not found');
         }
         
-        return view('resume.show', compact('user'));
+        // Check if employer has favorited this seeker
+        $isFavorite = false;
+        if (auth()->check() && auth()->user()->isEmployer() && auth()->user()->employer) {
+            $isFavorite = auth()->user()->employer->savedCandidates()
+                ->where('seeker_id', $user->seeker->id)
+                ->exists();
+        }
+        
+        return view('resume.show', compact('user', 'isFavorite'));
     }
 }

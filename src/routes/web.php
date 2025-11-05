@@ -98,6 +98,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('applications.show');
         Route::patch('/applications/{application}/status', [Employer\ApplicationController::class, 'updateStatus'])
             ->name('applications.updateStatus');
+        
+        // Saved Candidates
+        Route::get('/saved-candidates', [Employer\SavedCandidateController::class, 'index'])
+            ->name('saved-candidates.index');
+        Route::post('/seekers/{seeker}/toggle-favorite', [Employer\SavedCandidateController::class, 'toggle'])
+            ->name('seekers.toggle-favorite');
+        Route::delete('/saved-candidates/{savedCandidate}', [Employer\SavedCandidateController::class, 'destroy'])
+            ->name('saved-candidates.destroy');
     });
 
     // Seeker Routes

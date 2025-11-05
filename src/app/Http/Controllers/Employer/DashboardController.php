@@ -33,6 +33,7 @@ class DashboardController extends Controller
             'shortlisted_applications' => Application::whereIn('job_id', $jobIds)->where('status', 'shortlisted')->count(),
             'accepted_applications' => Application::whereIn('job_id', $jobIds)->where('status', 'accepted')->count(),
             'rejected_applications' => Application::whereIn('job_id', $jobIds)->where('status', 'rejected')->count(),
+            'favorite_candidates' => $employer->savedCandidates()->count(),
         ];
 
         // Recent data
@@ -63,13 +64,21 @@ class DashboardController extends Controller
             ->take(3)
             ->get();
 
+        // Favorite candidates (seekers)
+        $favoriteCandidates = $employer->savedCandidates()
+            ->with(['seeker.user'])
+            ->latest()
+            ->take(5)
+            ->get();
+
         return view('employer.dashboard', compact(
             'employer', 
             'stats', 
             'recentJobs', 
             'recentApplications',
             'unreadMessages',
-            'recentConversations'
+            'recentConversations',
+            'favoriteCandidates'
         ));
     }
 }

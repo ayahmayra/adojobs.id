@@ -64,6 +64,11 @@ class Employer extends Model
         return $this->hasMany(Conversation::class);
     }
 
+    public function savedCandidates()
+    {
+        return $this->hasMany(SavedCandidate::class);
+    }
+
     /**
      * Boot method to auto-generate slug
      */

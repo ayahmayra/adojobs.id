@@ -45,7 +45,15 @@ class SeekerController extends Controller
 
         $seekers = $query->orderBy('created_at', 'desc')->paginate(12);
 
-        return view('seekers.index', compact('seekers'));
+        // Get favorite seeker IDs for current employer (if logged in as employer)
+        $favoriteSeekerIds = [];
+        if (auth()->check() && auth()->user()->isEmployer() && auth()->user()->employer) {
+            $favoriteSeekerIds = auth()->user()->employer->savedCandidates()
+                ->pluck('seeker_id')
+                ->toArray();
+        }
+
+        return view('seekers.index', compact('seekers', 'favoriteSeekerIds'));
     }
 
     /**
@@ -59,7 +67,15 @@ class SeekerController extends Controller
                   ->take(5);
         }]);
 
-        return view('seekers.show', compact('seeker'));
+        // Check if employer has favorited this seeker
+        $isFavorite = false;
+        if (auth()->check() && auth()->user()->isEmployer() && auth()->user()->employer) {
+            $isFavorite = auth()->user()->employer->savedCandidates()
+                ->where('seeker_id', $seeker->id)
+                ->exists();
+        }
+
+        return view('seekers.show', compact('seeker', 'isFavorite'));
     }
 }
 
