@@ -19,6 +19,27 @@ age: 2493
 
 ## Verifikasi Masalah
 
+### Step 0: Check Permissions First (IMPORTANT!)
+
+**Sebelum purge Cloudflare cache, cek ownership dan permissions dulu:**
+
+```bash
+cd /var/www/adojobs.id
+./check-storage-permissions.sh
+```
+
+**Expected ownership:**
+- `/app/public`: `www-data:www-data`
+- `/app/public/storage` (symlink): `www-data:www-data`
+- `/app/storage/app/public`: `www-data:www-data`
+- All files: `www-data:www-data`
+
+**Jika ada yang owner-nya `root`:**
+```bash
+# Fix all permissions and ownership
+./fix-all-storage-permissions.sh
+```
+
 ### Test 1: Bypass Cloudflare (Direct IP)
 
 ```bash
