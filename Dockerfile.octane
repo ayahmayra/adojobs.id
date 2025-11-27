@@ -1,0 +1,175 @@
+# ============================================
+# Multi-stage Dockerfile for Laravel with FrankenPHP + Octane
+# Optimized for Production Performance
+# ============================================
+
+# ============================================
+# Stage 1: Builder - Dependencies and Assets
+# ============================================
+FROM dunglas/frankenphp:latest-php8.3-builder AS builder
+
+# Install system dependencies for building
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    libzip-dev \
+    libpq-dev \
+    libicu-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions needed for Laravel
+RUN docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip \
+    intl \
+    opcache
+
+# Install Redis extension
+RUN pecl install redis && docker-php-ext-enable redis
+
+# Install Node.js 20 LTS for asset building
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /app
+
+# Copy composer files first (for better layer caching)
+COPY src/composer.json src/composer.lock* ./
+
+# Install Composer dependencies (including dev for building)
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --no-progress \
+    --no-scripts \
+    --prefer-dist \
+    --optimize-autoloader
+
+# Copy package.json for NPM dependencies
+COPY src/package*.json ./
+
+# Install NPM dependencies
+RUN if [ -f "package.json" ]; then npm ci --only=production; fi
+
+# Copy application code
+COPY src /app
+
+# Build frontend assets
+RUN if [ -f "package.json" ]; then npm run build; fi
+
+# Run Composer scripts (post-install hooks)
+RUN composer run-script post-autoload-dump
+
+# ============================================
+# Stage 2: Production Runtime with Octane
+# ============================================
+FROM dunglas/frankenphp:latest-php8.3 AS production
+
+# Install runtime dependencies only
+RUN apt-get update && apt-get install -y \
+    curl \
+    supervisor \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions (runtime only, no dev tools)
+RUN docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    zip \
+    intl \
+    opcache
+
+# Install Redis extension
+RUN pecl install redis && docker-php-ext-enable redis
+
+# Install Composer (needed for Octane)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configure OPcache with JIT for maximum performance
+RUN echo "[opcache]" > /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.jit=tracing" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.jit_buffer_size=100M" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.memory_consumption=256M" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.interned_strings_buffer=16" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.max_accelerated_files=20000" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.save_comments=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
+    echo "opcache.fast_shutdown=1" >> /usr/local/etc/php/conf.d/opcache.ini
+
+# Configure PHP for production
+RUN echo "[PHP]" > /usr/local/etc/php/conf.d/custom.ini && \
+    echo "memory_limit=512M" >> /usr/local/etc/php/conf.d/custom.ini && \
+    echo "upload_max_filesize=20M" >> /usr/local/etc/php/conf.d/custom.ini && \
+    echo "post_max_size=20M" >> /usr/local/etc/php/conf.d/custom.ini && \
+    echo "max_execution_time=300" >> /usr/local/etc/php/conf.d/custom.ini && \
+    echo "max_input_time=300" >> /usr/local/etc/php/conf.d/custom.ini && \
+    echo "default_socket_timeout=300" >> /usr/local/etc/php/conf.d/custom.ini && \
+    echo "realpath_cache_size=4096K" >> /usr/local/etc/php/conf.d/custom.ini && \
+    echo "realpath_cache_ttl=600" >> /usr/local/etc/php/conf.d/custom.ini
+
+# Set working directory
+WORKDIR /app
+
+# Copy built application from builder
+COPY --from=builder --chown=www-data:www-data /app /app
+
+# Install Laravel Octane
+RUN composer require laravel/octane --no-interaction --no-progress
+
+# Install FrankenPHP Octane adapter (if not already included)
+RUN if ! grep -q "laravel/octane" composer.json; then \
+        composer require laravel/octane --no-interaction; \
+    fi
+
+# Publish Octane configuration
+RUN php artisan octane:install --server=frankenphp --no-interaction || true
+
+# Set proper permissions
+RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache && \
+    chmod -R 775 /app/storage /app/bootstrap/cache
+
+# Create Supervisor configuration for Octane
+RUN mkdir -p /etc/supervisor/conf.d
+COPY docker/supervisor/octane.conf /etc/supervisor/conf.d/octane.conf
+
+# Copy optimized Caddyfile for Octane worker mode
+COPY docker/frankenphp/Caddyfile.octane /etc/caddy/Caddyfile
+
+# Set environment variables
+ENV APP_ENV=production \
+    APP_DEBUG=false \
+    OCTANE_SERVER=frankenphp \
+    OCTANE_WORKERS=4 \
+    OCTANE_MAX_REQUESTS=500
+
+# Expose port
+EXPOSE 8080
+
+# Health check for Octane
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8080/ || exit 1
+
+# Start Octane via Supervisor (manages process lifecycle)
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
