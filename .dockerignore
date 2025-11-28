@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+.docker
+docker-compose*.yml
+Dockerfile*
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Laravel specific
+src/vendor
+src/node_modules
+src/.env
+src/.env.*
+src/storage/logs/*
+src/storage/framework/cache/*
+src/storage/framework/sessions/*
+src/storage/framework/views/*
+!src/storage/logs/.gitkeep
+!src/storage/framework/cache/.gitkeep
+!src/storage/framework/sessions/.gitkeep
+!src/storage/framework/views/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+

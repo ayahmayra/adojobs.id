@@ -1,0 +1,116 @@
+# Caddy Reverse Proxy Configuration for AdoJobs.id
+# Receives HTTP requests from Nginx Proxy Manager (SSL handled by NPM)
+# Flow: Cloudflare -> NAT (103.130.82.202) -> NPM (10.10.10.42) -> This Caddy (10.10.10.33:80)
+
+# Default HTTP server - handles all requests on port 80
+:80 {
+    # Global logging configuration
+    log {
+        output stdout
+        format json
+        level INFO
+    }
+    
+    # Match requests by Host header
+    @adojobs_domain {
+        host adojobs.id
+    }
+    @www_adojobs_domain {
+        host www.adojobs.id
+    }
+    
+    # Handle adojobs.id domain (from NPM or direct)
+    handle @adojobs_domain {
+        reverse_proxy adojobs_app:8080 {
+            # Forward X-Forwarded-* headers from NPM
+            header_up X-Real-IP {http.request.header.X-Real-IP}
+            header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
+            # Forward protocol (https from NPM/Cloudflare)
+            header_up X-Forwarded-Proto {http.request.header.X-Forwarded-Proto}
+            # Set port explicitly (443 for HTTPS)
+            header_up X-Forwarded-Port 443
+            # Set host explicitly
+            header_up X-Forwarded-Host adojobs.id
+            # Always set Host header (required for Symfony Request)
+            header_up Host adojobs.id
+            
+            transport http {
+                dial_timeout 10s
+                response_header_timeout 30s
+            }
+        }
+        
+        # Security headers
+        header {
+            -Server
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            X-XSS-Protection "1; mode=block"
+            Referrer-Policy "strict-origin-when-cross-origin"
+            Permissions-Policy "geolocation=(), microphone=(), camera=()"
+        }
+        
+        encode gzip zstd
+    }
+    
+    # Handle www.adojobs.id domain
+    handle @www_adojobs_domain {
+        reverse_proxy adojobs_app:8080 {
+            header_up X-Real-IP {http.request.header.X-Real-IP}
+            header_up X-Forwarded-For {http.request.header.X-Forwarded-For}
+            header_up X-Forwarded-Proto {http.request.header.X-Forwarded-Proto}
+            header_up X-Forwarded-Port 443
+            header_up X-Forwarded-Host www.adojobs.id
+            header_up Host www.adojobs.id
+            
+            transport http {
+                dial_timeout 10s
+                response_header_timeout 30s
+            }
+        }
+        
+        header {
+            -Server
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            X-XSS-Protection "1; mode=block"
+        }
+        
+        encode gzip zstd
+    }
+    
+    # Default: handle IP access (10.10.10.33) and other requests
+    handle {
+        reverse_proxy adojobs_app:8080 {
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto http
+            header_up X-Forwarded-Port 80
+            header_up X-Forwarded-Host {http.request.header.Host}
+            header_up Host {http.request.header.Host}
+            
+            transport http {
+                dial_timeout 10s
+                response_header_timeout 30s
+            }
+        }
+        
+        header {
+            -Server
+            X-Frame-Options "SAMEORIGIN"
+            X-Content-Type-Options "nosniff"
+            X-XSS-Protection "1; mode=block"
+        }
+        
+        encode gzip zstd
+    }
+    
+    # Error handling
+    handle_errors {
+        @5xx expression `{err.status_code} >= 500 && {err.status_code} < 600`
+        respond @5xx "Service temporarily unavailable" 503
+        
+        @4xx expression `{err.status_code} >= 400 && {err.status_code} < 500`
+        respond @4xx "Not found" 404
+    }
+}

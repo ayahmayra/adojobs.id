@@ -1,0 +1,27 @@
+# Docker volumes
+/mariadb_data/
+/redis_data/
+/frankenphp_cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment files at root (use src/.env instead)
+.env
+.env.production
+
+# Temporary files
+*.tmp
+*.temp
+

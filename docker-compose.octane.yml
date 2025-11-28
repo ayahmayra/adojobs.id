@@ -1,0 +1,170 @@
+# ============================================
+# Docker Compose for AdoJobs.id Production
+# With Laravel Octane + FrankenPHP Worker Mode
+# ============================================
+
+services:
+  # ==========================================
+  # Laravel Application with FrankenPHP + Octane
+  # ==========================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.octane
+      target: production
+      args:
+        - BUILDKIT_INLINE_CACHE=1
+    container_name: adojobs_app_octane
+    ports:
+      - "127.0.0.1:8282:8080"
+    volumes:
+      # Mount only storage and .env (not entire /app)
+      - ./src/storage:/app/storage
+      - ./src/.env:/app/.env
+    environment:
+      # Application
+      - APP_NAME=AdoJobs.id
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=https://adojobs.id
+      
+      # Database
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=adojobs_production
+      - DB_USERNAME=adojobs_prod_user
+      - DB_PASSWORD=AdoJobs!Pr0d#2025$$$$DbU$$$$er
+      
+      # Redis
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=Redis!AdoJobs#2025$$$$Cache
+      - REDIS_PORT=6379
+      
+      # Cache & Session
+      - CACHE_STORE=redis
+      - SESSION_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      
+      # Octane Configuration
+      - OCTANE_SERVER=frankenphp
+      - OCTANE_WORKERS=4
+      - OCTANE_MAX_REQUESTS=500
+      - OCTANE_HTTPS=false
+      
+      # Logging
+      - LOG_CHANNEL=stack
+      - LOG_LEVEL=error
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - adojobs_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ==========================================
+  # MariaDB Database
+  # ==========================================
+  db:
+    image: mariadb:11.2
+    container_name: adojobs_db
+    ports:
+      - "127.0.0.1:3307:3306"
+    environment:
+      - MYSQL_DATABASE=adojobs_production
+      - MYSQL_USER=adojobs_prod_user
+      - MYSQL_PASSWORD=AdoJobs!Pr0d#2025$$$$DbU$$$$er
+      - MYSQL_ROOT_PASSWORD=AdoJobs2025!R00t#Secure$$$$Pass
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/custom.cnf
+      - ./backups:/backups
+    networks:
+      - adojobs_network
+    restart: unless-stopped
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --max-connections=200
+      --innodb-buffer-pool-size=512M
+      --innodb-log-file-size=128M
+      --innodb-flush-log-at-trx-commit=2
+      --innodb-flush-method=O_DIRECT
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ==========================================
+  # Redis for Cache and Queue
+  # ==========================================
+  redis:
+    image: redis:7-alpine
+    container_name: adojobs_redis
+    ports:
+      - "127.0.0.1:6380:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - adojobs_network
+    restart: unless-stopped
+    command: >
+      redis-server
+      --requirepass "Redis!AdoJobs#2025$$Cache"
+      --appendonly yes
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "Redis!AdoJobs#2025$$Cache", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ==========================================
+  # PHPMyAdmin (Optional - for database management)
+  # ==========================================
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: adojobs_phpmyadmin
+    ports:
+      - "127.0.0.1:8281:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=AdoJobs2025!R00t#Secure$$$$Pass
+      - UPLOAD_LIMIT=20M
+    depends_on:
+      - db
+    networks:
+      - adojobs_network
+    restart: unless-stopped
+
+# ==========================================
+# Volumes
+# ==========================================
+volumes:
+  mariadb_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# ==========================================
+# Networks
+# ==========================================
+networks:
+  adojobs_network:
+    driver: bridge

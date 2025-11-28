@@ -1,0 +1,86 @@
+{
+    frankenphp
+    order php_server before file_server
+}
+
+# Internal port (accessed by reverse proxy)
+:8080 {
+    root * /app/public
+    
+    # Enable compression for better performance
+    encode gzip zstd
+    
+    # PHP FrankenPHP WITHOUT worker mode (same as development)
+    php_server
+    
+    # Security headers
+    header {
+        -Server
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "no-referrer-when-downgrade"
+    }
+    
+    # Static file caching with versioning support
+    @static {
+        file
+        path *.ico *.css *.js *.gif *.jpg *.jpeg *.png *.svg *.woff *.woff2 *.ttf *.eot *.webp
+    }
+    header @static {
+        Cache-Control "public, max-age=31536000, immutable"
+        Vary "Accept-Encoding"
+    }
+    
+    # Images caching
+    @images {
+        path *.jpg *.jpeg *.png *.gif *.ico *.svg *.webp
+    }
+    header @images Cache-Control "public, max-age=86400"
+    
+    # Fonts caching
+    @fonts {
+        path *.woff *.woff2 *.ttf *.eot
+    }
+    header @fonts {
+        Cache-Control "public, max-age=31536000, immutable"
+        Access-Control-Allow-Origin "*"
+    }
+    
+    # Handle Laravel's pretty URLs first
+    try_files {path} {path}/ /index.php?{query}
+    
+    # File server for static assets (must be before blocking rules)
+    file_server
+    
+    # Block access to sensitive files (after file_server)
+    @blocked {
+        path *.env* *.log *.sql *.sqlite .git/* .gitignore .gitattributes
+    }
+    respond @blocked 403
+    
+    # Laravel specific - block direct access to protected directories
+    # Note: /storage/* in URL maps to public/storage/* (symlink), which should be accessible
+    # We only block bootstrap/cache and vendor, not /storage/* because it's a valid public symlink
+    @disallowed {
+        path /bootstrap/cache/* /vendor/*
+    }
+    respond @disallowed 403
+    
+    # Structured logging (same as development)
+    log {
+        output stdout
+        format json
+        level INFO
+    }
+    
+    # Error handling
+    handle_errors {
+        @5xx expression `{err.status_code} >= 500 && {err.status_code} < 600`
+        respond @5xx "Service temporarily unavailable" 503
+        
+        @4xx expression `{err.status_code} >= 400 && {err.status_code} < 500`
+        respond @4xx "Not found" 404
+    }
+}
+

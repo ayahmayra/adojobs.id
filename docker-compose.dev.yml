@@ -1,0 +1,90 @@
+services:
+  # Laravel Application for Development (PHP built-in server)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: adojobs_dev_app
+    ports:
+      - "8282:8080"
+    volumes:
+      - ./src:/app
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=jobmaker
+      - DB_USERNAME=jobmaker
+      - DB_PASSWORD=secret
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=null
+      - REDIS_PORT=6379
+      - CACHE_DRIVER=file
+      - SESSION_DRIVER=file
+      - QUEUE_CONNECTION=sync
+    depends_on:
+      - db
+      - redis
+    networks:
+      - adojobs_dev_network
+    restart: unless-stopped
+    command: ["php", "-S", "0.0.0.0:8080", "-t", "/app/public"]
+
+  # MariaDB Database
+  db:
+    image: mariadb:11.2
+    container_name: adojobs_dev_db
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_DATABASE=jobmaker
+      - MYSQL_USER=jobmaker
+      - MYSQL_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=root_secret
+    volumes:
+      - mariadb_dev_data:/var/lib/mysql
+    networks:
+      - adojobs_dev_network
+    restart: unless-stopped
+
+  # Redis for Cache and Queue
+  redis:
+    image: redis:7-alpine
+    container_name: adojobs_dev_redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - adojobs_dev_network
+    restart: unless-stopped
+
+  # PHPMyAdmin for Database Management
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: adojobs_dev_phpmyadmin
+    ports:
+      - "8281:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=root_secret
+    depends_on:
+      - db
+    networks:
+      - adojobs_dev_network
+    restart: unless-stopped
+
+volumes:
+  mariadb_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+
+networks:
+  adojobs_dev_network:
+    driver: bridge
