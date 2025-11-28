@@ -288,7 +288,7 @@
                                 <img src="{{ asset('storage/' . $job->employer->company_logo) }}" 
                                      alt="{{ $job->employer->company_name }}" 
                                      class="object-cover flex-shrink-0 w-16 h-16 rounded-xl">
-                            @elseif($job->employer->user->avatar)
+                            @elseif($job->employer->user && $job->employer->user->avatar)
                                 <img src="{{ $job->employer->user->avatar_url }}" 
                                      alt="{{ $job->employer->company_name }}" 
                                      class="object-cover flex-shrink-0 w-16 h-16 rounded-xl">
