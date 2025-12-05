@@ -18,7 +18,6 @@
                     Buat Artikel
                 </a>
             </div>
-        </div>
     </x-slot>
 
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
