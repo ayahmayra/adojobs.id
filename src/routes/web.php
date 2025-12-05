@@ -7,6 +7,7 @@ use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\SeekerController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\TesterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JobController;
@@ -71,6 +72,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{conversation}', [MessageController::class, 'destroy'])->name('destroy');
     });
 
+    // Tester Routes (Requires tester status)
+    Route::middleware(['tester'])->prefix('tester')->name('tester.')->group(function () {
+        Route::get('/welcome', [TesterController::class, 'welcome'])->name('welcome');
+        Route::post('/welcomed', [TesterController::class, 'markWelcomed'])->name('welcomed');
+        Route::get('/feedback', [TesterController::class, 'feedbackForm'])->name('feedback');
+        Route::post('/feedback', [TesterController::class, 'submitFeedback'])->name('feedback.submit');
+    });
+
     // Admin Routes
     Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
@@ -90,6 +99,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/settings', [Admin\SettingsController::class, 'index'])->name('settings.index');
         Route::post('/settings/general', [Admin\SettingsController::class, 'updateGeneral'])->name('settings.general.update');
         Route::delete('/settings/file', [Admin\SettingsController::class, 'deleteFile'])->name('settings.file.delete');
+        
+        // Tester Management Routes
+        Route::post('/users/{user}/toggle-tester', [Admin\UserController::class, 'toggleTester'])
+            ->name('users.toggle-tester');
+        
+        // Feedback Routes
+        Route::get('/feedbacks', [Admin\FeedbackController::class, 'index'])->name('feedbacks.index');
+        Route::get('/feedbacks/{feedback}', [Admin\FeedbackController::class, 'show'])->name('feedbacks.show');
+        Route::patch('/feedbacks/{feedback}/status', [Admin\FeedbackController::class, 'updateStatus'])
+            ->name('feedbacks.update-status');
     });
 
     // Employer Routes

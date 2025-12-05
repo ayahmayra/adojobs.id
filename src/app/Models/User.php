@@ -49,6 +49,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'is_tester' => 'boolean',
+            'tester_welcomed_at' => 'datetime',
         ];
     }
 
@@ -203,5 +205,31 @@ class User extends Authenticatable
     public function hasRelatedData(): bool
     {
         return !empty($this->getRelatedDataCounts());
+    }
+
+    /**
+     * Tester Mode Methods
+     */
+    public function isTester(): bool
+    {
+        return (bool) $this->is_tester;
+    }
+
+    public function needsTesterWelcome(): bool
+    {
+        return $this->is_tester && is_null($this->tester_welcomed_at);
+    }
+
+    public function markTesterWelcomed(): void
+    {
+        $this->update(['tester_welcomed_at' => now()]);
+    }
+
+    /**
+     * Feedback relationship
+     */
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class);
     }
 }

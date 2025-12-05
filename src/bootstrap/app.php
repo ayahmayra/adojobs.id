@@ -19,10 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'employer' => \App\Http\Middleware\EmployerMiddleware::class,
             'seeker' => \App\Http\Middleware\SeekerMiddleware::class,
             'active' => \App\Http\Middleware\CheckActiveUser::class,
+            'tester' => \App\Http\Middleware\CheckTester::class,
         ]);
         
         $middleware->web(append: [
             \App\Http\Middleware\CheckActiveUser::class,
+            \App\Http\Middleware\CheckTesterWelcome::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

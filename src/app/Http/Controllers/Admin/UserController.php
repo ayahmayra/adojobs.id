@@ -188,5 +188,27 @@ class UserController extends Controller
         return redirect()->back()
             ->with('success', 'User status updated successfully.');
     }
+
+    /**
+     * Toggle user tester status
+     */
+    public function toggleTester(User $user)
+    {
+        $newStatus = !$user->is_tester;
+        
+        // If removing tester status, also clear the welcomed_at timestamp
+        $updateData = ['is_tester' => $newStatus];
+        if (!$newStatus) {
+            $updateData['tester_welcomed_at'] = null;
+        }
+        
+        $user->update($updateData);
+
+        $message = $newStatus 
+            ? "User '{$user->name}' telah ditambahkan sebagai Tester."
+            : "User '{$user->name}' telah dihapus dari Tester.";
+
+        return redirect()->back()->with('success', $message);
+    }
 }
 

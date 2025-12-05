@@ -192,102 +192,36 @@
         </form>
     </div>
 
-    <!-- Simple Editor Script -->
+    <!-- TinyMCE WYSIWYG Editor -->
+    <script src="https://cdn.tiny.cloud/1/urvxm2ydq1dnh645trxxg4vrw3ojyhvrr1c9usou4wl7uysr/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const contentTextarea = document.getElementById('content');
-            
-            // Create toolbar
-            const toolbar = document.createElement('div');
-            toolbar.className = 'mb-2 p-2 bg-gray-100 border border-gray-300 rounded-t-lg flex flex-wrap gap-2';
-            
-            // Toolbar buttons
-            const buttons = [
-                { name: 'bold', label: 'B', title: 'Bold' },
-                { name: 'italic', label: 'I', title: 'Italic' },
-                { name: 'underline', label: 'U', title: 'Underline' },
-                { name: 'separator', label: '|' },
-                { name: 'h3', label: 'H3', title: 'Heading 3' },
-                { name: 'h4', label: 'H4', title: 'Heading 4' },
-                { name: 'separator', label: '|' },
-                { name: 'ul', label: '•', title: 'Bullet List' },
-                { name: 'ol', label: '1.', title: 'Numbered List' },
-                { name: 'separator', label: '|' },
-                { name: 'link', label: '🔗', title: 'Insert Link' },
-                { name: 'separator', label: '|' },
-                { name: 'clear', label: 'Clear', title: 'Clear Formatting' }
-            ];
-            
-            buttons.forEach(button => {
-                if (button.name === 'separator') {
-                    const separator = document.createElement('span');
-                    separator.className = 'text-gray-400 mx-1';
-                    separator.textContent = button.label;
-                    toolbar.appendChild(separator);
-                } else {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = 'px-2 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500';
-                    btn.textContent = button.label;
-                    btn.title = button.title;
-                    btn.onclick = () => formatText(button.name);
-                    toolbar.appendChild(btn);
+            tinymce.init({
+                selector: '#content',
+                height: 500,
+                menubar: false,
+                plugins: [
+                    'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                    'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                    'insertdatetime', 'media', 'table', 'help', 'wordcount'
+                ],
+                toolbar: 'undo redo | formatselect | bold italic underline strikethrough | ' +
+                        'alignleft aligncenter alignright alignjustify | ' +
+                        'bullist numlist outdent indent | link image media | ' +
+                        'removeformat code fullscreen help',
+                content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 14px; }',
+                branding: false,
+                promotion: false,
+                elementpath: false,
+                statusbar: true,
+                resize: true,
+                block_formats: 'Paragraph=p; Heading 2=h2; Heading 3=h3; Heading 4=h4; Preformatted=pre',
+                setup: function(editor) {
+                    editor.on('change', function() {
+                        editor.save();
+                    });
                 }
             });
-            
-            // Insert toolbar before textarea
-            contentTextarea.parentNode.insertBefore(toolbar, contentTextarea);
-            
-            // Formatting functions
-            function formatText(command) {
-                const start = contentTextarea.selectionStart;
-                const end = contentTextarea.selectionEnd;
-                const selectedText = contentTextarea.value.substring(start, end);
-                let formattedText = '';
-                
-                switch(command) {
-                    case 'bold':
-                        formattedText = `<strong>${selectedText || 'Bold text'}</strong>`;
-                        break;
-                    case 'italic':
-                        formattedText = `<em>${selectedText || 'Italic text'}</em>`;
-                        break;
-                    case 'underline':
-                        formattedText = `<u>${selectedText || 'Underlined text'}</u>`;
-                        break;
-                    case 'h3':
-                        formattedText = `<h3>${selectedText || 'Heading 3'}</h3>`;
-                        break;
-                    case 'h4':
-                        formattedText = `<h4>${selectedText || 'Heading 4'}</h4>`;
-                        break;
-                    case 'ul':
-                        formattedText = `<ul>\n<li>${selectedText || 'List item'}</li>\n</ul>`;
-                        break;
-                    case 'ol':
-                        formattedText = `<ol>\n<li>${selectedText || 'List item'}</li>\n</ol>`;
-                        break;
-                    case 'link':
-                        const url = prompt('Enter URL:');
-                        if (url) {
-                            formattedText = `<a href="${url}">${selectedText || 'Link text'}</a>`;
-                        }
-                        return;
-                    case 'clear':
-                        formattedText = selectedText.replace(/<[^>]*>/g, '');
-                        break;
-                }
-                
-                if (formattedText) {
-                    const newValue = contentTextarea.value.substring(0, start) + formattedText + contentTextarea.value.substring(end);
-                    contentTextarea.value = newValue;
-                    
-                    // Set cursor position after inserted text
-                    const newPosition = start + formattedText.length;
-                    contentTextarea.setSelectionRange(newPosition, newPosition);
-                    contentTextarea.focus();
-                }
-            }
         });
     </script>
 </x-layouts.dashboard>

@@ -100,6 +100,9 @@
                                     <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
                                 @endif
                                 <div class="text-sm text-gray-500">{{ $user->email }}</div>
+                                <div class="mt-1">
+                                    <x-tester-badge :user="$user" />
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -127,6 +130,12 @@
                             Edit
                         </a>
                         @if($user->id !== auth()->id())
+                        <form action="{{ route('admin.users.toggle-tester', $user) }}" method="POST" class="inline mr-3">
+                            @csrf
+                            <button type="submit" class="{{ $user->isTester() ? 'text-gray-600 hover:text-gray-900' : 'text-yellow-600 hover:text-yellow-900' }}">
+                                {{ $user->isTester() ? 'Remove Tester' : 'Set Tester' }}
+                            </button>
+                        </form>
                         <button type="button" 
                                 class="text-red-600 hover:text-red-900"
                                 onclick="openDeleteModal({{ $user->id }}, '{{ $user->name }}', '{{ $user->email }}', '{{ $user->role }}')"
